@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="am">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Keno - Atlas-V Replica</title>
+    <title>Ethio Lottery Virtual Keno Replica</title>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-panel: #1e293b;
-            --grid-border: #334155;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-gold: #fbbf24;
-            --selected-blue: #3b82f6;
-            --hit-green: #22c55e;
-            --miss-red: #ef4444;
+            --bg-main: #090d16;
+            --bg-panel: #111827;
+            --grid-border: #1f2937;
+            --text-light: #f9fafb;
+            --text-muted: #6b7280;
+            --ethio-green: #10b981;
+            --ethio-yellow: #f59e0b;
+            --ethio-red: #ef4444;
+            --selected-glow: #06b6d4;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             user-select: none;
         }
 
@@ -32,375 +32,387 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .game-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 320px 1fr;
             gap: 20px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1150px;
             background: var(--bg-panel);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #1e293b;
         }
 
-        /* Left Side: Paytable & Stats */
+        /* Sidebar / Info Layout */
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            background: rgba(0,0,0,0.2);
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid var(--grid-border);
         }
 
-        .hud-item {
+        .brand-header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--ethio-yellow);
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--text-light);
+        }
+
+        .hud-card {
+            background: #1f2937;
+            padding: 12px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--bg-main);
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-gold);
+            border-right: 4px solid var(--ethio-green);
         }
 
-        .hud-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
-        .hud-value { font-weight: bold; font-size: 1.2rem; color: var(--text-light); }
+        .hud-label { color: var(--text-muted); font-size: 0.8rem; font-weight: bold; }
+        .hud-value { font-size: 1.15rem; font-weight: bold; color: var(--ethio-yellow); }
 
-        .paytable-box {
+        .paytable-wrapper {
             flex-grow: 1;
         }
 
-        .paytable-title {
-            font-size: 0.9rem;
+        .matrix-header {
+            font-size: 0.85rem;
+            color: var(--ethio-green);
             text-transform: uppercase;
-            color: var(--accent-gold);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-weight: bold;
             text-align: center;
-            letter-spacing: 1px;
         }
 
-        .paytable-row {
+        .payout-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            padding: 6px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-bottom: 1px solid #1f2937;
             font-size: 0.9rem;
         }
-        .paytable-row.highlight {
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--accent-gold);
+
+        .payout-row.active-win {
+            background: rgba(16, 185, 129, 0.25);
+            border: 1px solid var(--ethio-green);
+            color: #fff;
             font-weight: bold;
         }
 
-        /* Right Side: Grid and Dashboard Controls */
-        .main-content {
+        /* Main Grid Area */
+        .board-layout {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .keno-grid {
+        .keno-grid-80 {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 8px;
-            background: rgba(0,0,0,0.3);
-            padding: 12px;
-            border-radius: 12px;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px;
+            border-radius: 8px;
             border: 1px solid var(--grid-border);
         }
 
-        .cell {
-            aspect-ratio: 1;
-            background: var(--bg-panel);
-            border: 1px solid var(--grid-border);
-            border-radius: 6px;
+        .number-node {
+            aspect-ratio: 1.1;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
+            color: #9ca3af;
         }
 
-        .cell:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-gold);
+        .number-node:hover {
+            border-color: var(--ethio-yellow);
+            color: #fff;
         }
 
-        /* Cell States matching Atlas-V Visuals */
-        .cell.selected { background-color: var(--selected-blue); color: white; }
-        .cell.drawn { background-color: var(--miss-red); color: white; }
-        .cell.hit { 
-            background-color: var(--hit-green); 
-            color: white; 
-            box-shadow: 0 0 12px var(--hit-green);
-            animation: pulse 0.5s ease;
+        /* State Mapping matching Virtual Layouts */
+        .number-node.selected {
+            background: var(--selected-glow);
+            border-color: #06b6d4;
+            color: #000;
         }
 
-        @keyframes pulse {
+        .number-node.drawn-miss {
+            background: var(--ethio-red);
+            border-color: #f87171;
+            color: #fff;
+        }
+
+        .number-node.drawn-hit {
+            background: var(--ethio-green);
+            border-color: #34d399;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            animation: hitBounce 0.4s ease;
+        }
+
+        @keyframes hitBounce {
             0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.12); }
             100% { transform: scale(1); }
         }
 
-        /* Controls Dashboard */
-        .controls {
+        /* Interactive Control Dashboard */
+        .dashboard-controls {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
-        button {
-            padding: 15px;
+        .ctrl-btn {
+            padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.2s;
-            color: white;
+            color: #fff;
+            transition: background 0.15s;
         }
 
-        .btn-secondary { background: #475569; }
-        .btn-secondary:hover { background: #64748b; }
-        .btn-action { background: #d97706; }
-        .btn-action:hover { background: #f59e0b; }
-        .btn-play { background: #16a34a; font-size: 1.1rem; }
-        .btn-play:hover { background: #22c55e; }
-        button:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .btn-config { background: #374151; border: 1px solid #4b5563; }
+        .btn-config:hover { background: #4b5563; }
+        .btn-start { background: var(--ethio-green); font-size: 1.05rem; }
+        .btn-start:hover { background: #059669; }
+        
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
 
 <div class="game-container">
+    <!-- Left Interface Column -->
     <div class="sidebar">
-        <div class="hud-item">
-            <span class="hud-label">Credits</span>
-            <span class="hud-value" id="balance-display">$1,000.00</span>
-        </div>
-        <div class="hud-item">
-            <span class="hud-label">Bet</span>
-            <span class="hud-value" id="bet-display">$5.00</span>
-        </div>
-        <div class="hud-item">
-            <span class="hud-label">Hits</span>
-            <span class="hud-value" id="hits-display">0 / 0</span>
-        </div>
+        <div class="brand-header">VIRTUAL KENO</div>
         
-        <div class="paytable-box">
-            <div class="paytable-title">Payout Matrix</div>
-            <div id="paytable-rows">
-                </div>
+        <div class="hud-card">
+            <span class="hud-label">ማስቀመጫ (Balance)</span>
+            <span class="hud-value" id="wallet-view">1,000.00 ETB</span>
+        </div>
+        <div class="hud-card">
+            <span class="hud-label">ውርርድ (Bet)</span>
+            <span class="hud-value" id="wager-view">10.00 ETB</span>
+        </div>
+        <div class="hud-card">
+            <span class="hud-label">ምርጫ (Picks)</span>
+            <span class="hud-value" id="count-view">0 / 8</span>
+        </div>
+
+        <div class="paytable-wrapper">
+            <div class="matrix-header">የክፍያ ሰንጠረዥ (Paytable)</div>
+            <div id="matrix-rows"></div>
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="keno-grid" id="grid"></div>
+    <!-- Right Interface Column -->
+    <div class="board-layout">
+        <div class="keno-grid-80" id="board-grid"></div>
         
-        <div class="controls">
-            <button class="btn-secondary" id="btn-bet">Bet +$5</button>
-            <button class="btn-secondary" id="btn-quick">Quick Pick</button>
-            <button class="btn-secondary" id="btn-clear">Clear</button>
-            <button class="btn-play" id="btn-play">Draw</button>
+        <div class="dashboard-controls">
+            <button class="ctrl-btn btn-config" id="act-wager">Bet +10</button>
+            <button class="ctrl-btn btn-config" id="act-auto">Quick Pick</button>
+            <button class="ctrl-btn btn-config" id="act-reset">Clear</button>
+            <button class="ctrl-btn btn-start" id="act-play">Start Draw</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Hypergeometric Authentic Casino Paytable Rules 
-    // Format: [spotsSelected]: { [hits]: multiplier }
-    const PAYTABLE_MAP = {
-        1: { 1: 3 },
-        2: { 1: 1, 2: 9 },
-        3: { 2: 2, 3: 16 },
-        4: { 2: 1, 3: 6, 4: 80 },
-        5: { 2: 1, 3: 3, 4: 12, 5: 400 },
-        6: { 3: 3, 4: 7, 5: 60, 6: 1600 },
-        7: { 3: 1, 4: 5, 5: 21, 6: 250, 7: 5000 },
-        8: { 4: 3, 5: 12, 6: 100, 7: 1500, 8: 15000 },
-        9: { 4: 2, 5: 9, 6: 54, 7: 400, 8: 4000, 9: 25000 },
-        10: { 0: 2, 5: 5, 6: 24, 7: 140, 8: 1200, 9: 10000, 10: 100000 }
+    // Exact Virtual 1-8 spot payoff configuration map
+    const ETHIO_ODDS = {
+        1: { 1: 3.5 },
+        2: { 1: 1, 2: 8.5 },
+        3: { 2: 2.5, 3: 16 },
+        4: { 2: 1, 3: 5, 4: 55 },
+        5: { 2: 1, 3: 2.5, 4: 10, 5: 250 },
+        6: { 3: 2, 4: 6, 5: 50, 6: 1000 },
+        7: { 3: 1, 4: 3, 5: 15, 6: 120, 7: 4000 },
+        8: { 4: 2, 5: 10, 6: 60, 7: 600, 8: 10000 }
     };
 
-    let state = {
-        balance: 1000,
-        bet: 5,
+    let runtime = {
+        wallet: 1000,
+        wager: 10,
         selected: [],
         drawn: [],
-        isDrawing: false
+        activeDraw: false
     };
 
-    const gridEl = document.getElementById('grid');
-    const paytableRowsEl = document.getElementById('paytable-rows');
+    const targetGrid = document.getElementById('board-grid');
+    const targetMatrix = document.getElementById('matrix-rows');
 
-    // Initialize the 80 Ball Grid Element
-    function initGrid() {
-        gridEl.innerHTML = '';
-        for (let i = 1; i <= 80; i++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.textContent = i;
-            cell.addEventListener('click', () => handleCellClick(i));
-            gridEl.appendChild(cell);
+    function buildBoard() {
+        targetGrid.innerHTML = '';
+        for (let idx = 1; idx <= 80; idx++) {
+            const node = document.createElement('div');
+            node.className = 'number-node';
+            node.textContent = idx;
+            node.addEventListener('click', () => onNodeInteraction(idx));
+            targetGrid.appendChild(node);
         }
     }
 
-    function handleCellClick(num) {
-        if (state.isDrawing) return;
-        
-        // Reset boards on selection if a previous round completed
-        if (state.drawn.length > 0) { resetRoundVisuals(); }
+    function onNodeInteraction(numberValue) {
+        if (runtime.activeDraw) return;
+        if (runtime.drawn.length > 0) runtime.drawn = [];
 
-        const idx = state.selected.indexOf(num);
-        if (idx > -1) {
-            state.selected.splice(idx, 1);
+        const positionIndex = runtime.selected.indexOf(numberValue);
+        if (positionIndex > -1) {
+            runtime.selected.splice(positionIndex, 1);
         } else {
-            if (state.selected.length >= 10) return; // Standard casino spot cap
-            state.selected.push(num);
+            if (runtime.selected.length >= 8) return; // Strict Ethio Lottery 8 spot ceiling
+            runtime.selected.push(numberValue);
         }
-        updateUI();
+        refreshInterface();
     }
 
-    function updateUI() {
-        // Sync Grid Cell States
-        const cells = gridEl.children;
-        for (let i = 1; i <= 80; i++) {
-            const cell = cells[i - 1];
-            cell.className = 'cell'; // clear states
-            
-            const isSel = state.selected.includes(i);
-            const isDrwn = state.drawn.includes(i);
+    function refreshInterface() {
+        const structuralNodes = targetGrid.children;
+        for (let currentNum = 1; currentNum <= 80; currentNum++) {
+            const loopNode = structuralNodes[currentNum - 1];
+            loopNode.className = 'number-node';
 
-            if (isSel && isDrwn) cell.classList.add('hit');
-            else if (isSel) cell.classList.add('selected');
-            else if (isDrwn) cell.classList.add('drawn');
+            const activeSelection = runtime.selected.includes(currentNum);
+            const activeDrawPool = runtime.drawn.includes(currentNum);
+
+            if (activeSelection && activeDrawPool) loopNode.classList.add('drawn-hit');
+            else if (activeSelection) loopNode.classList.add('selected');
+            else if (activeDrawPool) loopNode.classList.add('drawn-miss');
         }
 
-        // Sync HUD Strings
-        document.getElementById('balance-display').textContent = `$${state.balance.toFixed(2)}`;
-        document.getElementById('bet-display').textContent = `$${state.bet.toFixed(2)}`;
+        // Value Displays
+        document.getElementById('wallet-view').textContent = `${runtime.wallet.toFixed(2)} ETB`;
+        document.getElementById('wager-view').textContent = `${runtime.wager.toFixed(2)} ETB`;
         
-        const hits = state.selected.filter(n => state.drawn.includes(n)).length;
-        document.getElementById('hits-display').textContent = `${hits} / ${state.selected.length}`;
+        const matchedHits = runtime.selected.filter(val => runtime.drawn.includes(val)).length;
+        document.getElementById('count-view').textContent = `${runtime.selected.length} / 8`;
 
-        // Build Dynamic Sidebar Paytable Layout
-        renderPaytable(hits);
+        renderOddsMatrix(matchedHits);
 
-        // Control Lockouts
-        document.getElementById('btn-play').disabled = state.selected.length === 0 || state.isDrawing;
-        document.getElementById('btn-clear').disabled = state.isDrawing;
-        document.getElementById('btn-quick').disabled = state.isDrawing;
-        document.getElementById('btn-bet').disabled = state.isDrawing;
+        // Control Validation Lockouts
+        document.getElementById('act-play').disabled = runtime.selected.length === 0 || runtime.activeDraw;
+        document.getElementById('act-reset').disabled = runtime.activeDraw;
+        document.getElementById('act-auto').disabled = runtime.activeDraw;
+        document.getElementById('act-wager').disabled = runtime.activeDraw;
     }
 
-    function renderPaytable(currentHitCount) {
-        paytableRowsEl.innerHTML = '';
-        const spots = state.selected.length;
-        if (spots === 0) {
-            paytableRowsEl.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:20px; font-size:0.85rem;">Select spots on the grid to populate payouts.</div>';
+    function renderOddsMatrix(currentHitCount) {
+        targetMatrix.innerHTML = '';
+        const currentSelectedLength = runtime.selected.length;
+
+        if (currentSelectedLength === 0) {
+            targetMatrix.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:25px; font-size:0.8rem;">ቁጥሮችን ይምረጡ (Select numbers to view paytable)</div>';
             return;
         }
 
-        const payouts = PAYTABLE_MAP[spots] || {};
-        // Layout all possible successful match scenarios sorted by payout size
-        Object.keys(payouts).forEach(hitKey => {
-            const hitNum = parseInt(hitKey);
-            const mult = payouts[hitNum];
-            const winAmount = state.bet * mult;
-            
-            const row = document.createElement('div');
-            row.classList.add('paytable-row');
-            if (state.drawn.length > 0 && currentHitCount === hitNum) {
-                row.classList.add('highlight'); // Highlight exact winning tier
+        const tierPrizes = ETHIO_ODDS[currentSelectedLength] || {};
+        Object.keys(tierPrizes).forEach(matchCountKey => {
+            const matchInt = parseInt(matchCountKey);
+            const oddsRatio = tierPrizes[matchInt];
+            const localizedPrizeValue = runtime.wager * oddsRatio;
+
+            const entryRow = document.createElement('div');
+            entryRow.className = 'payout-row';
+            if (runtime.drawn.length > 0 && currentHitCount === matchInt) {
+                entryRow.classList.add('active-win');
             }
-            
-            row.innerHTML = `<span>Hit ${hitNum}</span><span>$${winAmount.toFixed(2)}</span>`;
-            paytableRowsEl.appendChild(row);
+
+            entryRow.innerHTML = `<span>ይውጡ ${matchInt} (Hit ${matchInt})</span><span>${localizedPrizeValue.toFixed(2)} ETB</span>`;
+            targetMatrix.appendChild(entryRow);
         });
     }
 
-    function resetRoundVisuals() {
-        state.drawn = [];
-    }
+    // Interactive Button Hooks
+    document.getElementById('act-wager').addEventListener('click', () => {
+        runtime.drawn = [];
+        runtime.wager = runtime.wager >= 50 ? 10 : runtime.wager + 10;
+        refreshInterface();
+    });
 
-    // Quick Pick Feature
-    document.getElementById('btn-quick').addEventListener('click', () => {
-        resetRoundVisuals();
-        state.selected = [];
-        while(state.selected.length < 10) {
-            let r = Math.floor(Math.random() * 80) + 1;
-            if(!state.selected.includes(r)) state.selected.push(r);
+    document.getElementById('act-auto').addEventListener('click', () => {
+        runtime.drawn = [];
+        runtime.selected = [];
+        while (runtime.selected.length < 8) {
+            let generatedVal = Math.floor(Math.random() * 80) + 1;
+            if (!runtime.selected.includes(generatedVal)) runtime.selected.push(generatedVal);
         }
-        updateUI();
+        refreshInterface();
     });
 
-    // Clear Feature
-    document.getElementById('btn-clear').addEventListener('click', () => {
-        resetRoundVisuals();
-        state.selected = [];
-        updateUI();
+    document.getElementById('act-reset').addEventListener('click', () => {
+        runtime.drawn = [];
+        runtime.selected = [];
+        refreshInterface();
     });
 
-    // Bet Adjustment Cycle
-    document.getElementById('btn-bet').addEventListener('click', () => {
-        resetRoundVisuals();
-        state.bet = state.bet >= 25 ? 5 : state.bet + 5;
-        updateUI();
-    });
-
-    // The Drawing Loop Logic Engine
-    document.getElementById('btn-play').addEventListener('click', () => {
-        if (state.balance < state.bet) {
-            alert("Insufficient Balance!");
+    document.getElementById('act-play').addEventListener('click', () => {
+        if (runtime.wallet < runtime.wager) {
+            alert("ይቅርታ፣ በቂ ገንዘብ የለም! (Insufficient Balance)");
             return;
         }
-        
-        state.balance -= state.bet;
-        state.drawn = [];
-        state.isDrawing = true;
-        updateUI();
 
-        // Standard 20 number drawing tracking pool
-        let pool = Array.from({length: 80}, (_, i) => i + 1);
-        let drawsLeft = 20;
+        runtime.wallet -= runtime.wager;
+        runtime.drawn = [];
+        runtime.activeDraw = true;
+        refreshInterface();
 
-        let interval = setInterval(() => {
-            if (drawsLeft > 0) {
-                let randIdx = Math.floor(Math.random() * pool.length);
-                let ball = pool.splice(randIdx, 1)[0];
-                state.drawn.push(ball);
-                updateUI();
-                drawsLeft--;
+        let processingPool = Array.from({length: 80}, (_, indexOffset) => indexOffset + 1);
+        let trackingBallsToDraw = 20;
+
+        let sequenceLoop = setInterval(() => {
+            if (trackingBallsToDraw > 0) {
+                let selectionIndex = Math.floor(Math.random() * processingPool.length);
+                let selectedBallValue = processingPool.splice(selectionIndex, 1)[0];
+                runtime.drawn.push(selectedBallValue);
+                refreshInterface();
+                trackingBallsToDraw--;
             } else {
-                clearInterval(interval);
-                evaluateWin();
+                clearInterval(sequenceLoop);
+                calculateFinalReturns();
             }
-        }, 120); // 120ms delay replicates the smooth mechanical cascade of Atlas-V displays
+        }, 150); // Paced to match the digital telemetry display of modern lottery systems
     });
 
-    function evaluateWin() {
-        state.isDrawing = false;
-        const spots = state.selected.length;
-        const hits = state.selected.filter(n => state.drawn.includes(n)).length;
-        
-        const payouts = PAYTABLE_MAP[spots] || {};
-        if (payouts[hits]) {
-            const prize = state.bet * payouts[hits];
-            state.balance += prize;
+    function calculateFinalReturns() {
+        runtime.activeDraw = false;
+        const totalPicksSelected = runtime.selected.length;
+        const totalMatchesFound = runtime.selected.filter(val => runtime.drawn.includes(val)).length;
+
+        const dynamicTargetMap = ETHIO_ODDS[totalPicksSelected] || {};
+        if (dynamicTargetMap[totalMatchesFound]) {
+            const allocatedWinnings = runtime.wager * dynamicTargetMap[totalMatchesFound];
+            runtime.wallet += allocatedWinnings;
         }
-        updateUI();
+        refreshInterface();
     }
 
-    // Start App Instance
-    initGrid();
-    updateUI();
+    // App Initialization
+    buildBoard();
+    refreshInterface();
 </script>
 
 </body>
