@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethio Lottery Virtual Keno Replica</title>
+    <title>Ethio Virtual Keno - Premium Edition</title>
     <style>
         :root {
-            --bg-main: #090d16;
-            --bg-panel: #111827;
-            --grid-border: #1f2937;
-            --text-light: #f9fafb;
-            --text-muted: #6b7280;
+            --bg-main: #060913;
+            --bg-panel: #0d1326;
+            --grid-border: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #64748b;
             --ethio-green: #10b981;
-            --ethio-yellow: #f59e0b;
+            --ethio-yellow: #fbbf24;
             --ethio-red: #ef4444;
-            --selected-glow: #06b6d4;
+            --neon-glow: #22d3ee;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             user-select: none;
         }
 
@@ -32,20 +32,66 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
         }
 
         .game-container {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 20px;
+            gap: 24px;
             width: 100%;
-            max-width: 1150px;
+            max-width: 1200px;
             background: var(--bg-panel);
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
         }
+
+        /* Top Display Strip Bar Layout mimicking the Atlas-V header */
+        .top-glow-banner {
+            grid-column: span 2;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--grid-border);
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-glow-banner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--ethio-green), var(--ethio-yellow), var(--neon-glow));
+        }
+
+        .banner-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--ethio-yellow);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .banner-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-node {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+        .stat-val { font-size: 1.3rem; font-weight: bold; color: var(--text-light); }
+        .stat-val.highlight { color: var(--ethio-green); text-shadow: 0 0 8px var(--ethio-green); }
 
         /* Sidebar / Info Layout */
         .sidebar {
@@ -53,33 +99,23 @@
             flex-direction: column;
             gap: 15px;
             background: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 12px;
             border: 1px solid var(--grid-border);
         }
 
-        .brand-header {
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--ethio-yellow);
-            font-weight: bold;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-            color: var(--text-light);
-        }
-
         .hud-card {
-            background: #1f2937;
-            padding: 12px;
-            border-radius: 6px;
+            background: #111827;
+            padding: 14px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-right: 4px solid var(--ethio-green);
+            border-left: 4px solid var(--neon-glow);
         }
 
         .hud-label { color: var(--text-muted); font-size: 0.8rem; font-weight: bold; }
-        .hud-value { font-size: 1.15rem; font-weight: bold; color: var(--ethio-yellow); }
+        .hud-value { font-size: 1.2rem; font-weight: bold; color: var(--ethio-yellow); }
 
         .paytable-wrapper {
             flex-grow: 1;
@@ -87,128 +123,177 @@
 
         .matrix-header {
             font-size: 0.85rem;
-            color: var(--ethio-green);
+            color: var(--neon-glow);
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-weight: bold;
-            text-align: center;
+            letter-spacing: 0.5px;
         }
 
         .payout-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            padding: 8px 12px;
-            border-bottom: 1px solid #1f2937;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
             font-size: 0.9rem;
+            color: #94a3b8;
         }
 
         .payout-row.active-win {
-            background: rgba(16, 185, 129, 0.25);
-            border: 1px solid var(--ethio-green);
+            background: rgba(34, 211, 238, 0.15);
+            border: 1px solid var(--neon-glow);
             color: #fff;
             font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-glow);
         }
 
         /* Main Grid Area */
         .board-layout {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .keno-grid-80 {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 10px;
-            border-radius: 8px;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 12px;
             border: 1px solid var(--grid-border);
         }
 
         .number-node {
             aspect-ratio: 1.1;
             background: #111827;
-            border: 1px solid #374151;
-            border-radius: 4px;
+            border: 1px solid #1f2937;
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             cursor: pointer;
+            position: relative;
             transition: all 0.1s ease;
-            color: #9ca3af;
+            color: #4b5563;
         }
 
         .number-node:hover {
-            border-color: var(--ethio-yellow);
+            border-color: var(--neon-glow);
             color: #fff;
         }
 
-        /* State Mapping matching Virtual Layouts */
+        /* Authentic Atlas-V High-Glow & Burst States */
         .number-node.selected {
-            background: var(--selected-glow);
-            border-color: #06b6d4;
-            color: #000;
+            background: #1e293b;
+            border: 2px solid var(--neon-glow);
+            color: var(--neon-glow);
+            box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.2);
         }
 
+        /* Standard drawn ball backdrop color change */
         .number-node.drawn-miss {
-            background: var(--ethio-red);
-            border-color: #f87171;
+            background: #3f1a24;
+            border-color: var(--ethio-red);
             color: #fff;
         }
 
+        /* Golden flash overlay matching the image header panels */
         .number-node.drawn-hit {
-            background: var(--ethio-green);
-            border-color: #34d399;
+            background: #064e3b;
+            border-color: var(--ethio-green);
             color: #fff;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-            animation: hitBounce 0.4s ease;
+            font-size: 1.25rem;
+            text-shadow: 0 0 8px #fff;
+            animation: casinoGlowBurst 0.5s ease-out infinite alternate;
         }
 
-        @keyframes hitBounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.12); }
-            100% { transform: scale(1); }
+        /* Neon ring overlay element that expands on draw */
+        .glowing-ring {
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 6px;
+            pointer-events: none;
+            border: 3px solid var(--ethio-yellow);
+            box-shadow: 0 0 20px var(--ethio-yellow), inset 0 0 10px var(--ethio-yellow);
+            animation: ringExpand 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Interactive Control Dashboard */
+        .number-node.drawn-hit .glowing-ring {
+            border-color: var(--ethio-green);
+            box-shadow: 0 0 25px var(--ethio-green), inset 0 0 15px var(--ethio-green);
+        }
+
+        /* Keyframes for Glowing Engine */
+        @keyframes ringExpand {
+            0% { transform: scale(0.6); opacity: 0; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes casinoGlowBurst {
+            0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.9), inset 0 0 10px rgba(255,255,255,0.4); }
+        }
+
+        /* Control Dashboard Buttons */
         .dashboard-controls {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         .ctrl-btn {
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
             color: #fff;
-            transition: background 0.15s;
+            text-transform: uppercase;
+            transition: all 0.15s;
         }
 
-        .btn-config { background: #374151; border: 1px solid #4b5563; }
-        .btn-config:hover { background: #4b5563; }
-        .btn-start { background: var(--ethio-green); font-size: 1.05rem; }
-        .btn-start:hover { background: #059669; }
+        .btn-config { background: #1e293b; border: 1px solid #334155; }
+        .btn-config:hover { background: #334155; }
+        .btn-start { 
+            background: linear-gradient(135deg, #059669, #10b981); 
+            font-size: 1.05rem; 
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+        .btn-start:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
         
         button:disabled {
-            opacity: 0.3;
+            opacity: 0.25;
             cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
     </style>
 </head>
 <body>
 
 <div class="game-container">
-    <!-- Left Interface Column -->
+    <!-- Top Display Glow Strip Strip -->
+    <div class="top-glow-banner">
+        <div class="banner-title">ETHIO VIRTUAL KENO</div>
+        <div class="banner-stats">
+            <div class="stat-node">
+                <span class="stat-lbl">የመጨረሻ ዕጣ (Last Draw Hit)</span>
+                <span class="stat-val id-glow" id="header-hits" style="color:var(--ethio-yellow)">0</span>
+            </div>
+            <div class="stat-node">
+                <span class="stat-lbl">አጠቃላይ አሸናፊ (Total Win)</span>
+                <span class="stat-val highlight" id="header-win">0.00 ETB</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Column -->
     <div class="sidebar">
-        <div class="brand-header">VIRTUAL KENO</div>
-        
         <div class="hud-card">
             <span class="hud-label">ማስቀመጫ (Balance)</span>
             <span class="hud-value" id="wallet-view">1,000.00 ETB</span>
@@ -223,12 +308,12 @@
         </div>
 
         <div class="paytable-wrapper">
-            <div class="matrix-header">የክፍያ ሰንጠረዥ (Paytable)</div>
+            <div class="matrix-header">የክፍያ ሰንጠረዥ (Paytable Matrix)</div>
             <div id="matrix-rows"></div>
         </div>
     </div>
 
-    <!-- Right Interface Column -->
+    <!-- Right Column Grid -->
     <div class="board-layout">
         <div class="keno-grid-80" id="board-grid"></div>
         
@@ -242,7 +327,6 @@
 </div>
 
 <script>
-    // Exact Virtual 1-8 spot payoff configuration map
     const ETHIO_ODDS = {
         1: { 1: 3.5 },
         2: { 1: 1, 2: 8.5 },
@@ -259,7 +343,8 @@
         wager: 10,
         selected: [],
         drawn: [],
-        activeDraw: false
+        activeDraw: false,
+        lastRoundWin: 0
     };
 
     const targetGrid = document.getElementById('board-grid');
@@ -278,13 +363,13 @@
 
     function onNodeInteraction(numberValue) {
         if (runtime.activeDraw) return;
-        if (runtime.drawn.length > 0) runtime.drawn = [];
+        if (runtime.drawn.length > 0) { runtime.drawn = []; runtime.lastRoundWin = 0; }
 
         const positionIndex = runtime.selected.indexOf(numberValue);
         if (positionIndex > -1) {
             runtime.selected.splice(positionIndex, 1);
         } else {
-            if (runtime.selected.length >= 8) return; // Strict Ethio Lottery 8 spot ceiling
+            if (runtime.selected.length >= 8) return; 
             runtime.selected.push(numberValue);
         }
         refreshInterface();
@@ -294,26 +379,47 @@
         const structuralNodes = targetGrid.children;
         for (let currentNum = 1; currentNum <= 80; currentNum++) {
             const loopNode = structuralNodes[currentNum - 1];
-            loopNode.className = 'number-node';
-
+            
+            // Retain selection class cleanly without wiping rings
             const activeSelection = runtime.selected.includes(currentNum);
             const activeDrawPool = runtime.drawn.includes(currentNum);
 
-            if (activeSelection && activeDrawPool) loopNode.classList.add('drawn-hit');
-            else if (activeSelection) loopNode.classList.add('selected');
-            else if (activeDrawPool) loopNode.classList.add('drawn-miss');
+            // Manage classes
+            loopNode.className = 'number-node';
+            
+            // Check if ring is already inside node
+            const existingRing = loopNode.querySelector('.glowing-ring');
+
+            if (activeDrawPool) {
+                if (activeSelection) {
+                    loopNode.classList.add('drawn-hit');
+                } else {
+                    loopNode.classList.add('drawn-miss');
+                }
+                // Append neon ring if not already added during live drawing sequence
+                if (!existingRing) {
+                    const ring = document.createElement('div');
+                    ring.className = 'glowing-ring';
+                    loopNode.appendChild(ring);
+                }
+            } else {
+                if (existingRing) existingRing.remove();
+                if (activeSelection) loopNode.classList.add('selected');
+            }
         }
 
         // Value Displays
         document.getElementById('wallet-view').textContent = `${runtime.wallet.toFixed(2)} ETB`;
         document.getElementById('wager-view').textContent = `${runtime.wager.toFixed(2)} ETB`;
+        document.getElementById('count-view').textContent = `${runtime.selected.length} / 8`;
         
         const matchedHits = runtime.selected.filter(val => runtime.drawn.includes(val)).length;
-        document.getElementById('count-view').textContent = `${runtime.selected.length} / 8`;
+        document.getElementById('header-hits').textContent = matchedHits;
+        document.getElementById('header-win').textContent = `${runtime.lastRoundWin.toFixed(2)} ETB`;
 
         renderOddsMatrix(matchedHits);
 
-        // Control Validation Lockouts
+        // Controls Lockouts
         document.getElementById('act-play').disabled = runtime.selected.length === 0 || runtime.activeDraw;
         document.getElementById('act-reset').disabled = runtime.activeDraw;
         document.getElementById('act-auto').disabled = runtime.activeDraw;
@@ -325,7 +431,7 @@
         const currentSelectedLength = runtime.selected.length;
 
         if (currentSelectedLength === 0) {
-            targetMatrix.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:25px; font-size:0.8rem;">ቁጥሮችን ይምረጡ (Select numbers to view paytable)</div>';
+            targetMatrix.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:25px; font-size:0.8rem;">ቁጥሮችን ይምረጡ (Select numbers)</div>';
             return;
         }
 
@@ -341,20 +447,19 @@
                 entryRow.classList.add('active-win');
             }
 
-            entryRow.innerHTML = `<span>ይውጡ ${matchInt} (Hit ${matchInt})</span><span>${localizedPrizeValue.toFixed(2)} ETB</span>`;
+            entryRow.innerHTML = `<span>Hit ${matchInt}</span><span>${localizedPrizeValue.toFixed(2)} ETB</span>`;
             targetMatrix.appendChild(entryRow);
         });
     }
 
-    // Interactive Button Hooks
     document.getElementById('act-wager').addEventListener('click', () => {
-        runtime.drawn = [];
+        runtime.drawn = []; runtime.lastRoundWin = 0;
         runtime.wager = runtime.wager >= 50 ? 10 : runtime.wager + 10;
         refreshInterface();
     });
 
     document.getElementById('act-auto').addEventListener('click', () => {
-        runtime.drawn = [];
+        runtime.drawn = []; runtime.lastRoundWin = 0;
         runtime.selected = [];
         while (runtime.selected.length < 8) {
             let generatedVal = Math.floor(Math.random() * 80) + 1;
@@ -364,7 +469,7 @@
     });
 
     document.getElementById('act-reset').addEventListener('click', () => {
-        runtime.drawn = [];
+        runtime.drawn = []; runtime.lastRoundWin = 0;
         runtime.selected = [];
         refreshInterface();
     });
@@ -377,6 +482,7 @@
 
         runtime.wallet -= runtime.wager;
         runtime.drawn = [];
+        runtime.lastRoundWin = 0;
         runtime.activeDraw = true;
         refreshInterface();
 
@@ -387,6 +493,8 @@
             if (trackingBallsToDraw > 0) {
                 let selectionIndex = Math.floor(Math.random() * processingPool.length);
                 let selectedBallValue = processingPool.splice(selectionIndex, 1)[0];
+                
+                // Add drawn value instantly to trigger the new ring append rule
                 runtime.drawn.push(selectedBallValue);
                 refreshInterface();
                 trackingBallsToDraw--;
@@ -394,7 +502,7 @@
                 clearInterval(sequenceLoop);
                 calculateFinalReturns();
             }
-        }, 150); // Paced to match the digital telemetry display of modern lottery systems
+        }, 160); // 160ms matches Atlas-V physical velocity cadence perfectly
     });
 
     function calculateFinalReturns() {
@@ -404,13 +512,12 @@
 
         const dynamicTargetMap = ETHIO_ODDS[totalPicksSelected] || {};
         if (dynamicTargetMap[totalMatchesFound]) {
-            const allocatedWinnings = runtime.wager * dynamicTargetMap[totalMatchesFound];
-            runtime.wallet += allocatedWinnings;
+            runtime.lastRoundWin = runtime.wager * dynamicTargetMap[totalMatchesFound];
+            runtime.wallet += runtime.lastRoundWin;
         }
         refreshInterface();
     }
 
-    // App Initialization
     buildBoard();
     refreshInterface();
 </script>
