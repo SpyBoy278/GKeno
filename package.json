@@ -1,0 +1,12 @@
+{
+  "name": "casino-keno",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "scripts": {
+    "build": "echo 'No build step needed'",
+    "start": "serve ."
+  }
+}
