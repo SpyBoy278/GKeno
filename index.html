@@ -8,12 +8,13 @@
         :root {
             --bg-darkest: #0b0f12;
             --bg-panel: #161d24;
-            --bg-grid-cell: #202b36;
+            --bg-grid-cell: #1f2831;
             --fast-green: #3cd371;
             --text-light: #ffffff;
             --text-muted: #7e8e9f;
             --glow-cyan: #00f0ff;
             --cell-border: #2c3b49;
+            --radar-circle: rgba(60, 211, 113, 0.15);
         }
 
         * {
@@ -40,6 +41,7 @@
             flex-direction: column;
             position: relative;
             padding-bottom: 70px;
+            overflow-x: hidden;
         }
 
         /* Top Brand Strip Header */
@@ -47,9 +49,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: #0f141a;
-            border-bottom: 1px solid #1a222a;
+            padding: 8px 12px;
+            background: #090d11;
+            border-bottom: 1px solid #14191f;
         }
 
         .brand-logo {
@@ -57,149 +59,204 @@
             font-weight: 900;
             line-height: 1;
         }
-        .brand-logo div:first-child { color: var(--text-light); font-size: 0.9rem; }
-        .brand-logo div:last-child { color: var(--fast-green); font-size: 1.2rem; margin-top: -2px; }
+        .brand-logo div:first-child { color: var(--text-light); font-size: 0.85rem; letter-spacing: 0.5px; }
+        .brand-logo div:last-child { color: var(--fast-green); font-size: 1.15rem; margin-top: -2px; }
 
         .header-meta {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
         .meta-pill {
-            background: rgba(32, 43, 54, 0.6);
-            padding: 6px 12px;
+            background: #161e25;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid #25313d;
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        .pill-val-gold { color: #f59e0b; }
+        .pill-val-gold { color: #f59e0b; font-weight: bold; }
 
-        /* Timer Block */
+        /* Timer Block Layout Tighter */
         .timer-strip {
             text-align: center;
-            padding: 6px 0;
+            padding: 4px 0;
             font-family: monospace;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: var(--glow-cyan);
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
             letter-spacing: 1px;
+            background: #0b0f12;
         }
 
-        /* Dynamic Infobox Display Panel matching photo_2026-05-27_18-02-03_2.jpg */
+        /* Core Dynamic Main Screen Stage Area */
+        .stage-area-container {
+            position: relative;
+            margin: 0 12px 10px 12px;
+            min-height: 175px;
+        }
+
+        /* Screen 1: Selection Panel View */
         .display-stage {
-            background: linear-gradient(180deg, #16222f 0%, #0f161e 100%);
-            margin: 0 12px 12px 12px;
-            border-radius: 12px;
-            padding: 16px;
-            min-height: 165px;
+            background: #161e25;
+            border-radius: 8px;
+            padding: 12px;
+            height: 175px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.03);
+            border: 1px solid #232e3a;
         }
 
         .stage-prompt {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
             text-align: center;
+            line-height: 1.2;
         }
         .stage-subprompt {
             color: var(--fast-green);
             font-weight: bold;
-            margin-top: 8px;
-            font-size: 1.2rem;
+            margin-top: 6px;
+            font-size: 1.15rem;
             text-align: center;
         }
 
-        /* Possible Win Component Inner Layout */
-        .possible-win-container {
-            width: 100%;
-            display: flex;
+        /* Screen 2: Animated Live Radar Stream Ball Draw Screen Overlay */
+        .radar-draw-stage {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, #132321 0%, #0d141a 100%);
+            border-radius: 8px;
+            border: 1px solid #1a2d29;
+            display: none;
             flex-direction: column;
-            gap: 8px;
+            padding: 10px;
+            justify-content: space-between;
+            overflow: hidden;
         }
 
-        .win-headline {
-            font-size: 1.25rem;
+        /* Targets target ring arcs background style elements */
+        .radar-rings {
+            position: absolute;
+            width: 130px; height: 130px;
+            border: 1px dashed var(--radar-circle);
+            border-radius: 50%;
+            top: 15px; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .radar-rings::before {
+            content: '';
+            width: 90px; height: 90px;
+            border: 1px solid var(--radar-circle);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        /* Mega Display Live Active Rolling Ball */
+        .mega-ball-focus {
+            width: 65px; height: 65px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #5d7899 0%, #1a2b3d 60%, #070d14 100%);
+            border: 2px solid #8ba3c2;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.9rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            z-index: 2;
+            margin: 0 auto;
+            margin-top: 12px;
+        }
+
+        .ball-counter-label {
+            position: absolute;
+            top: 10px; right: 12px;
+            font-size: 0.8rem;
             font-weight: bold;
-            color: var(--text-light);
-        }
-        .win-headline span {
-            color: var(--fast-green);
+            color: var(--text-muted);
         }
 
-        .matrix-table {
-            display: flex;
-            flex-direction: column;
+        /* Horizontal 2-Row Grid for Dropped Ball Capsules below radar graphics */
+        .draw-ball-matrix {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
             gap: 4px;
-            margin-top: 4px;
+            width: 100%;
+            margin-top: auto;
+            z-index: 2;
         }
-        .matrix-row {
-            display: flex;
-            gap: 16px;
-            font-size: 0.9rem;
-        }
-        .lbl-mute { color: var(--text-muted); width: 50px; }
-        .val-white { color: var(--text-light); font-weight: bold; text-align: center; min-width: 30px; }
 
-        /* Selected Horizontal Row Strip Items */
-        .horizontal-selection-strip {
-            display: flex;
-            gap: 6px;
-            margin-top: 10px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-        }
-        .strip-box {
-            width: 34px;
-            height: 34px;
-            background: rgba(32, 43, 54, 0.8);
-            border: 1px solid var(--cell-border);
-            border-radius: 6px;
+        .ball-capsule {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #475d75 0%, #182330 75%, #070c12 100%);
+            border: 1px solid #5a6d85;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 0.95rem;
-            color: var(--text-light);
-            flex-shrink: 0;
+            font-size: 0.8rem;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            animation: ballPop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Ball drop active game display layout */
-        .draw-ball-matrix {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 6px;
-            width: 100%;
+        @keyframes ballPop {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .ball-capsule {
-            aspect-ratio: 1;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #506680 0%, #1e2936 70%, #0b1118 100%);
-            border: 1px solid #6b7c96;
+
+        /* Multiplier Ticket Win Box Table Structure strings */
+        .possible-win-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+        .win-headline { font-size: 1.15rem; font-weight: bold; color: var(--text-light); }
+        .win-headline span { color: var(--fast-green); }
+        .matrix-table { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+        .matrix-row { display: flex; gap: 10px; font-size: 0.8rem; align-items: center; }
+        .lbl-mute { color: var(--text-muted); width: 42px; }
+        .val-white { color: var(--text-light); font-weight: bold; text-align: center; min-width: 24px; }
+
+        /* Selected Horizontal Row Strip Items */
+        .horizontal-selection-strip {
+            display: flex;
+            gap: 5px;
+            margin-top: auto;
+            overflow-x: auto;
+            padding-top: 5px;
+        }
+        .horizontal-selection-strip::-webkit-scrollbar { display: none; }
+        .strip-box {
+            width: 30px; height: 30px;
+            background: #1f2a35;
+            border: 1px solid var(--cell-border);
+            border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
             font-size: 0.85rem;
-            color: #fff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            animation: ballPop 0.2s ease forwards;
+            color: var(--text-light);
+            flex-shrink: 0;
         }
 
-        @keyframes ballPop {
-            0% { transform: scale(0.4); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Number Board Matrix Configuration */
+        /* Number Board Matrix Grid Canvas Configuration */
         .grid-section {
             padding: 0 12px;
             flex-grow: 1;
@@ -212,149 +269,152 @@
         .grid-cell {
             aspect-ratio: 1;
             background: var(--bg-grid-cell);
-            border: 1px solid var(--cell-border);
+            border: 1px solid #24303c;
             border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            font-size: 1rem;
-            color: var(--text-muted);
+            font-size: 0.95rem;
+            color: #8fa0b0;
             cursor: pointer;
             position: relative;
         }
 
-        /* Corner selector pins matching the reference screenshots */
+        /* Corner status notification indicators exactly matching the screenshots */
         .grid-cell.selected-pin::after {
             content: '';
             position: absolute;
-            top: 2px; right: 2px;
-            width: 5px; height: 5px;
+            top: 3px; left: 3px;
+            width: 4px; height: 4px;
             border-radius: 50%;
-            background-color: #ef4444; /* Match red corner pin accent */
-            box-shadow: 0 0 4px #ef4444;
+            background-color: #ff3b30;
         }
-        .grid-cell:nth-child(3n).selected-pin::after,
-        .grid-cell:nth-child(7n).selected-pin::after {
-            background-color: var(--glow-cyan); /* Alternating teal accents */
-            box-shadow: 0 0 4px var(--glow-cyan);
+        .grid-cell:nth-child(2n).selected-pin::after,
+        .grid-cell:nth-child(5n).selected-pin::after {
+            background-color: var(--glow-cyan);
         }
 
-        /* Solid green block state for hit cells */
+        /* Hit cells transition into solid emerald blocks */
         .grid-cell.hit-block {
-            background-color: var(--fast-green) !important;
-            color: var(--bg-darkest) !important;
-            border-color: var(--fast-green);
+            background: var(--fast-green) !important;
+            color: #000 !important;
+            border-color: var(--fast-green) !important;
         }
+        .grid-cell.hit-block::after { display: none; }
 
-        /* Console Control Bar Grid Layout */
+        /* Console Operational Controls Panel Footer Strip Layout */
         .action-tray {
-            padding: 12px;
+            padding: 10px 12px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            background: #0f141a;
-            border-top: 1px solid #1a222a;
-            margin-top: 15px;
+            gap: 6px;
+            background: #090d11;
+            border-top: 1px solid #14191f;
+            margin-top: 12px;
         }
         .tray-btn {
-            padding: 14px 4px;
+            padding: 12px 2px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             color: #fff;
-            background: #202b36;
-            border: 1px solid #2c3b49;
+            background: #1c2630;
+            border: 1px solid #283745;
         }
-        .tray-info-text {
+        .tray-btn:active { opacity: 0.8; }
+        .tray-btn.main-play-cta {
             grid-column: span 3;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 4px;
+            background: #1f372a;
+            color: var(--fast-green);
+            border: 1px solid #284d38;
+            font-size: 1.15rem;
+            padding: 10px 0;
+            margin-bottom: 4px;
         }
 
-        /* Bottom Application Bar */
+        /* Bottom Application Bar Navigation Elements */
         .bottom-navbar {
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            height: 60px;
-            background: #090d12;
-            border-top: 1px solid #151b22;
+            height: 56px;
+            background: #070a0e;
+            border-top: 1px solid #12181f;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             align-items: center;
-            text-align: center;
         }
         .nav-item {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            align-items: center;
+            gap: 1px;
+            font-weight: bold;
+            cursor: pointer;
         }
         .nav-item.active { color: var(--fast-green); }
-        .nav-icon { font-size: 1.1rem; }
+        .nav-icon { font-size: 1.05rem; margin-bottom: -1px; }
     </style>
 </head>
 <body>
 
 <div class="phone-wrapper">
-    <!-- Fast Keno Brand Navbar Header -->
     <div class="fast-header">
         <div class="brand-logo">
             <div>FAST</div>
             <div>KENO</div>
         </div>
         <div class="header-meta">
-            <div class="meta-pill"><span class="pill-val-gold" id="top-balance">1000.00</span> <span style="font-size:0.7rem;color:var(--text-muted)">ETB</span></div>
+            <div class="meta-pill"><span class="pill-val-gold" id="top-balance">1000.00</span> <span style="font-size:0.65rem;color:var(--text-muted)">ETB</span></div>
             <div class="meta-pill">ID: <span id="game-id-view">233987</span> <span style="color:var(--fast-green)">✔</span></div>
         </div>
     </div>
 
-    <!-- Background Loop System Timer -->
     <div class="timer-strip" id="countdown-clock">00:15</div>
 
-    <!-- Core Dynamic Display Card Panel -->
-    <div class="display-stage" id="stage-panel">
-        <div class="stage-prompt">Choose 10<br>numbers</div>
-        <div class="stage-subprompt">From 1 to 80</div>
+    <div class="stage-area-container">
+        <div class="display-stage" id="stage-panel">
+            <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
+            <div class="stage-subprompt">ከ 1 እስከ 80</div>
+        </div>
+
+        <div class="radar-draw-stage" id="radar-stage">
+            <div class="ball-counter-label" id="ball-counter-ui">0 / 20</div>
+            <div class="radar-rings">
+                <div class="mega-ball-focus" id="current-drop-ball">-</div>
+            </div>
+            <div class="draw-ball-matrix" id="ball-box-wrapper"></div>
+        </div>
     </div>
 
-    <!-- Active Numeric Gameboard Grid Canvas -->
     <div class="grid-section">
         <div class="fast-grid-80" id="main-canvas"></div>
     </div>
 
-    <!-- System Control Tray Footer Options -->
     <div class="action-tray">
-        <button class="tray-btn" id="ctrl-bet">Bet: 10 ETB</button>
-        <button class="tray-btn" id="ctrl-quick">Quick Pick</button>
-        <button class="tray-btn" id="ctrl-clear">Clear</button>
-        <div class="tray-info-text">Draw begins automatically when the countdown timer strikes 00:00</div>
+        <button class="tray-btn main-play-cta" id="ctrl-bet-display">ይጫወቱ</button>
+        <button class="tray-btn" id="ctrl-bet-cycle">- 10.00 +</button>
+        <button class="tray-btn" id="ctrl-quick">ማስተካከል</button>
+        <button class="tray-btn" id="ctrl-clear">ማጽዳት</button>
     </div>
 
-    <!-- Bottom Simulation Panel Menu Tabs -->
     <div class="bottom-navbar">
-        <div class="nav-item active"><span class="nav-icon">🎮</span><span>GAME</span></div>
-        <div class="nav-item"><span class="nav-icon">⏳</span><span>HISTORY</span></div>
-        <div class="nav-item"><span class="nav-icon">✔</span><span>RESULTS</span></div>
-        <div class="nav-item"><span class="nav-icon">📊</span><span>STATS</span></div>
+        <div class="nav-item active"><span class="nav-icon">🎮</span><span>ጨዋታ</span></div>
+        <div class="nav-item"><span class="nav-icon">⏳</span><span>ታሪክ</span></div>
+        <div class="nav-item"><span class="nav-icon">✔</span><span>ውጤቶች</span></div>
+        <div class="nav-item"><span class="nav-icon">📊</span><span>ስታቲስቲክስ</span></div>
     </div>
 </div>
 
 <script>
-    // Traditional Casino Hypergeometric Multipliers up to 10 picks
     const CASINO_ODDS_MAP = {
-        1: { 1: 3.5 },
-        2: { 2: 15 },
-        3: { 2: 2, 3: 50 },
-        4: { 2: 1, 3: 5, 4: 150 },
-        5: { 3: 3, 4: 15, 5: 500 },
-        6: { 3: 2, 4: 10, 5: 50, 6: 1500 },
-        7: { 4: 5, 5: 25, 6: 150, 7: 3000 },
+        1: { 1: 3.5 }, 2: { 2: 15 }, 3: { 2: 2, 3: 50 },
+        4: { 2: 1, 3: 5, 4: 150 }, 5: { 3: 3, 4: 15, 5: 500 },
+        6: { 3: 2, 4: 10, 5: 50, 6: 1500 }, 7: { 4: 5, 5: 25, 6: 150, 7: 3000 },
         8: { 4: 2, 5: 15, 6: 75, 7: 500, 8: 10000 },
         9: { 5: 10, 6: 50, 7: 250, 8: 1500, 9: 25000 },
         10: { 5: 5, 6: 25, 7: 125, 8: 1000, 9: 5000, 10: 100000 }
@@ -372,9 +432,12 @@
 
     const canvasEl = document.getElementById('main-canvas');
     const stagePanelEl = document.getElementById('stage-panel');
+    const radarStageEl = document.getElementById('radar-stage');
     const clockEl = document.getElementById('countdown-clock');
+    const currentDropBallEl = document.getElementById('current-drop-ball');
+    const ballCounterUiEl = document.getElementById('ball-counter-ui');
+    const ballContainerEl = document.getElementById('ball-box-wrapper');
 
-    // Automatically executes draw round loops once time expires
     function startGlobalTimerLoop() {
         setInterval(() => {
             if (!appState.isDrawing) {
@@ -419,25 +482,22 @@
         syncVisualGrid();
     }
 
-    // Calculates and dynamically renders the layout from photo_2026-05-27_18-02-03_2.jpg
     function updateDisplayStage() {
         const spotsCount = appState.selected.length;
         if (spotsCount === 0) {
             stagePanelEl.innerHTML = `
-                <div class="stage-prompt">Choose 10<br>numbers</div>
-                <div class="stage-subprompt">From 1 to 80</div>
+                <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
+                <div class="stage-subprompt">ከ 1 እስከ 80</div>
             `;
             return;
         }
 
-        // Extract maximum potential multiplier configuration
         const pickOdds = CASINO_ODDS_MAP[spotsCount] || {};
         const matches = Object.keys(pickOdds).map(Number).sort((a,b) => a - b);
         const maxMatch = matches.length > 0 ? Math.max(...matches) : 0;
         const maxMultiplier = maxMatch > 0 ? pickOdds[maxMatch] : 0;
         const possibleWinAmount = appState.bet * maxMultiplier;
 
-        // Build Multiplier Scale Line Markup Strings
         let matchLabels = '';
         let paysLabels = '';
         matches.forEach(m => {
@@ -445,7 +505,6 @@
             paysLabels += `<div class="val-white" style="color:var(--fast-green)">x${pickOdds[m]}</div>`;
         });
 
-        // Build Horizontal Number Ticket boxes
         let ticketBoxesHtml = '';
         appState.selected.forEach(num => {
             ticketBoxesHtml += `<div class="strip-box">${num}</div>`;
@@ -453,7 +512,7 @@
 
         stagePanelEl.innerHTML = `
             <div class="possible-win-container">
-                <div class="win-headline">Possible win <span>${possibleWinAmount}</span></div>
+                <div class="win-headline">Possible win <span>${possibleWinAmount.toFixed(2)}</span></div>
                 <div class="matrix-table">
                     <div class="matrix-row"><span class="lbl-mute">Match</span> ${matchLabels}</div>
                     <div class="matrix-row"><span class="lbl-mute">Pays</span> ${paysLabels}</div>
@@ -486,11 +545,10 @@
         
         document.getElementById('ctrl-clear').disabled = appState.isDrawing;
         document.getElementById('ctrl-quick').disabled = appState.isDrawing;
-        document.getElementById('ctrl-bet').disabled = appState.isDrawing;
+        document.getElementById('ctrl-bet-cycle').disabled = appState.isDrawing;
     }
 
     function executeDrawCycle() {
-        // Enforce fallback quick-pick values if player doesn't select targets
         if (appState.selected.length === 0) {
             forcedQuickPick();
         }
@@ -500,8 +558,12 @@
         appState.drawn = [];
         syncVisualGrid();
 
-        stagePanelEl.innerHTML = `<div class="draw-ball-matrix" id="ball-box-wrapper"></div>`;
-        const ballContainer = document.getElementById('ball-box-wrapper');
+        // Swap interface views completely smoothly without layout metric changes
+        stagePanelEl.style.display = 'none';
+        radarStageEl.style.display = 'flex';
+        ballContainerEl.innerHTML = '';
+        currentDropBallEl.textContent = '-';
+        ballCounterUiEl.textContent = '0 / 20';
 
         let drawPool = Array.from({length: 80}, (_, i) => i + 1);
         let count = 0;
@@ -513,18 +575,23 @@
                 
                 appState.drawn.push(selectedBall);
                 
+                // Update focus panel graphics
+                currentDropBallEl.textContent = selectedBall;
+                count++;
+                ballCounterUiEl.textContent = `${count} / 20`;
+
+                // Inject capsule tracking chip nodes
                 const ballNode = document.createElement('div');
                 ballNode.className = 'ball-capsule';
                 ballNode.textContent = selectedBall;
-                ballContainer.appendChild(ballNode);
+                ballContainerEl.appendChild(ballNode);
 
                 syncVisualGrid();
-                count++;
             } else {
                 clearInterval(interval);
-                finalizeCalculations();
+                setTimeout(finalizeCalculations, 1000);
             }
-        }, 160);
+        }, 250); // Matches the real app's visual drop pace perfectly
     }
 
     function finalizeCalculations() {
@@ -540,6 +607,11 @@
         appState.isDrawing = false;
         appState.timerVal = 15; 
         appState.gameId += 1;   
+
+        // Swap panel views back smoothly
+        radarStageEl.style.display = 'none';
+        stagePanelEl.style.display = 'flex';
+
         updateDisplayStage();
         syncVisualGrid();
     }
@@ -566,9 +638,9 @@
         syncVisualGrid();
     });
 
-    document.getElementById('ctrl-bet').addEventListener('click', () => {
-        appState.bet = appState.bet >= 50 ? 10 : appState.bet + 10;
-        document.getElementById('ctrl-bet').textContent = `Bet: ${appState.bet} ETB`;
+    document.getElementById('ctrl-bet-cycle').addEventListener('click', () => {
+        appState.bet = appState.bet >= 100 ? 10 : appState.bet + 10;
+        document.getElementById('ctrl-bet-cycle').textContent = `- ${appState.bet}.00 +`;
         if (appState.selected.length > 0) updateDisplayStage();
     });
 
