@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Keno - Real Application Engine Replica</title>
+    <title>Fast Keno - Accurate Layout Engine</title>
     <style>
         :root {
             --bg-darkest: #0e1318;
@@ -40,7 +40,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            padding-bottom: 70px;
+            padding-bottom: 20px;
             overflow-y: auto;
             border-left: 1px solid #1c2630;
             border-right: 1px solid #1c2630;
@@ -96,43 +96,6 @@
             background: #090c0f;
         }
 
-        /* Navigation Menu Elements tabs bar segment */
-        .tab-navigation-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            border-bottom: 2px solid #18222b;
-            background: #0d141a;
-            margin-bottom: 10px;
-        }
-        .tab-btn {
-            padding: 12px 0;
-            text-align: center;
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-        .tab-btn.active-tab {
-            color: var(--fast-green);
-            border-bottom: 3px solid var(--fast-green);
-            background: rgba(46, 204, 113, 0.05);
-        }
-
-        /* Switchable Screen Panels Wrapper Engine layout templates */
-        .app-view-panel {
-            display: none;
-            flex-direction: column;
-            padding: 0 12px;
-        }
-        .app-view-panel.active-view {
-            display: flex;
-        }
-
         /* Dynamic Visual Prompt Info Display Stage Board Box Panel */
         .display-stage-wrapper {
             background: #151e26;
@@ -143,7 +106,7 @@
             flex-direction: column;
             justify-content: center;
             border: 1px solid #22303d;
-            margin-bottom: 12px;
+            margin: 0 12px 12px 12px;
             position: relative;
         }
 
@@ -201,7 +164,7 @@
             scrollbar-width: none;
         }
 
-        /* Dynamic Ticket Builder Table Chains Frame Box markup elements */
+        /* Dynamic Ticket Builder Table Chains Frame Box */
         .possible-win-container {
             width: 100%;
             display: flex;
@@ -213,7 +176,7 @@
         .win-headline span { color: var(--fast-green); }
         .matrix-table { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
         .matrix-row { display: flex; gap: 12px; font-size: 0.85rem; align-items: center; }
-        .lbl-mute { color: var(--text-muted); width: 45px; }
+        .lbl-mute { color: var(--text-muted); width: 55px; }
         .val-white { color: var(--text-light); font-weight: bold; text-align: center; min-width: 26px; }
 
         .horizontal-selection-strip {
@@ -241,6 +204,8 @@
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 6px;
+            padding: 0 12px;
+            margin-bottom: 14px;
             transition: opacity 0.2s ease;
         }
         .grid-cell {
@@ -257,47 +222,108 @@
             cursor: pointer;
             position: relative;
         }
-        .grid-cell.selected-pin::after {
-            content: '';
-            position: absolute;
-            top: 4px; left: 4px;
-            width: 5px; height: 5px;
-            border-radius: 50%;
-            background-color: #e74c3c;
+        .grid-cell.selected-pin {
+            background-color: #27ae60 !important;
+            color: #fff !important;
         }
-        .grid-cell:nth-child(3n).selected-pin::after { background-color: var(--glow-cyan); }
 
-        /* Live Control Action Menu Footer Strips Panel Layout triggers */
-        .action-tray {
+        /* Integrated Control Controls Action Grid Row */
+        .control-input-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 14px;
-            margin-bottom: 14px;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 6px;
+            padding: 0 12px;
+            margin-bottom: 8px;
         }
-        .tray-btn {
-            padding: 12px 2px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            color: #fff;
+        .input-block {
             background: #1c2833;
             border: 1px solid #2c3e50;
-            cursor: pointer;
-            text-align: center;
+            border-radius: 6px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            color: #fff;
+            font-weight: bold;
         }
-        .tray-btn.main-play-cta {
-            grid-column: span 3;
+        .control-btn-action {
+            background: #1c2833;
+            border: 1px solid #2c3e50;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .control-btn-action.active-accent {
+            color: var(--fast-green);
+        }
+        .math-btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Wager Trigger Box Layout */
+        .main-wager-container {
+            padding: 0 12px;
+            margin-bottom: 14px;
+        }
+        .play-submit-cta {
+            width: 100%;
             background: #1e8449;
             color: #fff;
             border: 1px solid #27ae60;
-            font-size: 1.25rem;
+            border-radius: 6px;
+            font-size: 1.5rem;
+            font-weight: bold;
             padding: 12px 0;
-            margin-bottom: 4px;
+            cursor: pointer;
+            text-align: center;
         }
 
-        /* Live Real Application Style Multi-Ticket List Feed Row Cards style updates */
+        /* Navigation Menu Tab Strips - Placed Below Action Block */
+        .tab-navigation-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 2px solid #18222b;
+            background: #0d141a;
+            margin-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 12px 0;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .tab-btn.active-tab {
+            color: var(--fast-green);
+            border-bottom: 3px solid var(--fast-green);
+            background: rgba(46, 204, 113, 0.05);
+        }
+
+        /* Switchable Screen Panels Wrapper Engine layout templates */
+        .app-view-panel {
+            display: none;
+            flex-direction: column;
+            padding: 0 12px;
+        }
+        .app-view-panel.active-view {
+            display: flex;
+        }
+
+        /* Real Application Style Multi-Ticket List Feed Row Cards */
         .tickets-list-wrapper {
             display: flex;
             flex-direction: column;
@@ -395,38 +421,12 @@
         }
         .stat-count-val { width: 30px; text-align: right; font-weight: bold; color: var(--text-light); }
 
-        /* Main App Static View Templates Styling */
         .sub-panel-title {
             font-size: 1.15rem;
             font-weight: bold;
             color: var(--text-light);
             margin: 6px 0 12px 0;
         }
-
-        /* Sticky Bottom Navigation System Components Row Elements */
-        .app-bottom-navbar {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 60px;
-            background: #090c0e;
-            border-top: 1px solid #161e25;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            align-items: center;
-            z-index: 99;
-        }
-        .nav-link-item {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .nav-link-item.link-active { color: var(--fast-green); }
-        .nav-link-icon { font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -443,41 +443,48 @@
         </div>
     </div>
 
-    <div class="timer-strip" id="game-clock-view">Next Draw: 60s</div>
+    <div class="timer-strip" id="game-clock-view">Next Draw: 00:60</div>
+
+    <div class="display-stage-wrapper">
+        <div id="stage-info-default" class="possible-win-container">
+            <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
+            <div class="stage-subprompt">ከ 1 እስከ 80</div>
+        </div>
+        <div class="radar-draw-stage" id="stage-info-drawing">
+            <div class="radar-header-lbl"><span>ቀጥታ እጣ ማውጣት (Live Draw)</span> <span id="draw-count-lbl">0 / 20</span></div>
+            <div class="radar-center-focus" id="focus-drop-sphere">-</div>
+            <div class="horizontal-draw-basket" id="drawn-basket-chips-row"></div>
+        </div>
+    </div>
+
+    <div class="fast-grid-80" id="game-board-canvas"></div>
+
+    <div class="control-input-row" id="stake-adjuster-panel">
+        <div class="input-block">
+            <span class="math-btn" id="stake-minus">−</span>
+            <span id="stake-value-lbl">10.00</span>
+            <span class="math-btn" id="stake-plus">+</span>
+        </div>
+        <button class="control-btn-action active-accent" id="action-double-multiplier">X2</button>
+        <button class="control-btn-action" id="action-quick-pick">ማክስ</button>
+        <button class="control-btn-action" id="action-clear-board">⚙</button>
+    </div>
+
+    <div class="main-wager-container" id="wager-trigger-panel">
+        <button class="play-submit-cta" id="action-bet-trigger">ይጫወቱ</button>
+    </div>
 
     <div class="tab-navigation-strip">
-        <div class="tab-btn active-tab" onclick="switchMainAppPanel('view-game', this)">ጨዋታ</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-history', this)">ታሪክ</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-results', this)">ውጤቶች</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-stats', this)">ስታቲስቲክስ</div>
+        <div class="tab-btn active-tab" onclick="switchMainAppPanel('view-game', this)">🎰 ጨዋታ</div>
+        <div class="tab-btn" onclick="switchMainAppPanel('view-history', this)">⏳ ታሪክ</div>
+        <div class="tab-btn" onclick="switchMainAppPanel('view-results', this)">✔ ውጤቶች</div>
+        <div class="tab-btn" onclick="switchMainAppPanel('view-stats', this)">📊 ስታቲስቲክስ</div>
     </div>
 
     <div class="app-view-panel active-view" id="view-game">
-        <div class="display-stage-wrapper">
-            <div id="stage-info-default" class="possible-win-container">
-                <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
-                <div class="stage-subprompt">ከ 1 እስከ 80</div>
-            </div>
-            <div class="radar-draw-stage" id="stage-info-drawing">
-                <div class="radar-header-lbl"><span>ቀጥታ እጣ ማውጣት (Live Draw)</span> <span id="draw-count-lbl">0 / 20</span></div>
-                <div class="radar-center-focus" id="focus-drop-sphere">-</div>
-                <div class="horizontal-draw-basket" id="drawn-basket-chips-row"></div>
-            </div>
-        </div>
-
-        <div class="fast-grid-80" id="game-board-canvas"></div>
-
-        <div class="action-tray" id="game-controls-panel">
-            <button class="tray-btn main-play-cta" id="action-bet-trigger">ይጫወቱ (PLACE BET)</button>
-            <button class="tray-btn" id="action-stake-cycle">- 10.00 +</button>
-            <button class="tray-btn" id="action-quick-pick">ማስተካከል</button>
-            <button class="tray-btn" id="action-clear-board">ማጽዳት</button>
-        </div>
-
         <div style="margin-bottom: 20px;">
-            <div style="font-size:0.9rem; font-weight:bold; color:var(--text-muted); margin-top:10px;">የእኔ ቲኬቶች (My Round Tickets)</div>
-            <div class="tickets-list-wrapper" id="live-round-tickets-bucket">
-                </div>
+            <div style="font-size:0.9rem; font-weight:bold; color:var(--text-muted); margin-top:5px;">የእኔ ቲኬቶች (My Round Tickets)</div>
+            <div class="tickets-list-wrapper" id="live-round-tickets-bucket"></div>
         </div>
     </div>
 
@@ -490,21 +497,12 @@
 
     <div class="app-view-panel" id="view-results">
         <div class="sub-panel-title">የመጨረሻዎቹ 100 ዙር ውጤቶች (Last 100 Rounds Feed)</div>
-        <div class="tickets-list-wrapper" id="results-panel-archive-feed">
-            </div>
+        <div class="tickets-list-wrapper" id="results-panel-archive-feed"></div>
     </div>
 
     <div class="app-view-panel" id="view-stats">
-        <div class="sub-panel-title">የቁጥሮች ድግግሞሽ ስታቲስቲክስ (Last 100 Rounds Stats)</div>
-        <div class="stat-bar-container" id="stats-panel-bars-container">
-            </div>
-    </div>
-
-    <div class="app-bottom-navbar">
-        <div class="nav-link-item link-active" onclick="switchMainAppPanel('view-game', document.querySelectorAll('.tab-navigation-strip .tab-btn')[0])"><span class="nav-link-icon">🎮</span><span>ጨዋታ</span></div>
-        <div class="nav-link-item" onclick="switchMainAppPanel('view-history', document.querySelectorAll('.tab-navigation-strip .tab-btn')[1])"><span class="nav-link-icon">⏳</span><span>ታሪክ</span></div>
-        <div class="nav-link-item" onclick="switchMainAppPanel('view-results', document.querySelectorAll('.tab-navigation-strip .tab-btn')[2])"><span class="nav-link-icon">✔</span><span>ውጤቶች</span></div>
-        <div class="nav-link-item" onclick="switchMainAppPanel('view-stats', document.querySelectorAll('.tab-navigation-strip .tab-btn')[3])"><span class="nav-link-icon">📊</span><span>ስታቲስቲክስ</span></div>
+        <div class="sub-panel-title">የመጨረሻዎቹ 100 ዙር ስታቲስቲክስ</div>
+        <div class="stat-bar-container" id="stats-panel-bars-container"></div>
     </div>
 </div>
 
@@ -519,12 +517,11 @@
         10: { 5: 5, 6: 25, 7: 125, 8: 1000, 9: 5000, 10: 100000 }
     };
 
-    // Global Core Core Component Application Storage Context Instance Engine variables 
     let sysState = {
         balance: 1000.00,
         activeStake: 10,
         userSelections: [],
-        currentRoundTickets: [], // Store multiple live tickets in current loop iteration context 
+        currentRoundTickets: [], 
         archivedGamesHistory: [],
         drawnNumbers: [],
         isRoundDrawingActive: false,
@@ -533,7 +530,6 @@
         mockFrequencyStatsArray: {}
     };
 
-    // Global selector elements nodes mapping binding definition context structures
     const boardCanvasEl = document.getElementById('game-board-canvas');
     const stageDefaultPanelEl = document.getElementById('stage-info-default');
     const stageDrawingPanelEl = document.getElementById('stage-info-drawing');
@@ -543,41 +539,24 @@
     const drawnBasketChipsRowEl = document.getElementById('drawn-basket-chips-row');
     const liveRoundTicketsBucketEl = document.getElementById('live-round-tickets-bucket');
 
-    // Navigation routing controller view switcher logic block
     function switchMainAppPanel(targetPanelId, navigationTriggerNode) {
         document.querySelectorAll('.app-view-panel').forEach(panel => panel.classList.remove('active-view'));
         document.querySelectorAll('.tab-btn').forEach(tabBtn => tabBtn.classList.remove('active-tab'));
-        document.querySelectorAll('.nav-link-item').forEach(linkItem => linkItem.classList.remove('link-active'));
 
         document.getElementById(targetPanelId).classList.add('active-view');
-        
-        // Handle cross active tracking matching filters pairs
-        if(navigationTriggerNode) {
-            navigationTriggerNode.classList.add('active-tab');
-        }
-        
-        // Handle corresponding footer node highlight matching context
-        const indicesMap = { 'view-game':0, 'view-history':1, 'view-results':2, 'view-stats':3 };
-        const footNodes = document.querySelectorAll('.nav-link-item');
-        if(footNodes[indicesMap[targetPanelId]]) {
-            footNodes[indicesMap[targetPanelId]].classList.add('link-active');
-        }
+        if(navigationTriggerNode) navigationTriggerNode.classList.add('active-tab');
     }
 
-    // Core System Initialization Routine loop trigger configurations
     function initializeKenoSystem() {
-        // Build initial mock numbers analytical counts map dictionary structure matrix
         for(let i=1; i<=80; i++) {
             sysState.mockFrequencyStatsArray[i] = Math.floor(Math.random() * 22) + 12;
         }
-
         build80NumbersSelectionGrid();
         rebuildAnalyticalStatsBarsPanel();
         syncGlobalStateDisplayMetrics();
         startMasterSystemClockCountdownLoop();
     }
 
-    // Canvas Element Factory Array matrix generation logic 
     function build80NumbersSelectionGrid() {
         boardCanvasEl.innerHTML = '';
         for (let i = 1; i <= 80; i++) {
@@ -589,7 +568,6 @@
         }
     }
 
-    // Selection processing logic handles arrays limits conditions
     function handleGridSelectionAction(cellValueNumber) {
         if (sysState.isRoundDrawingActive) return;
 
@@ -605,7 +583,6 @@
         syncVisualGridSelectionPins();
     }
 
-    // Synchronize UI component canvas rendering grids with storage contexts arrays
     function syncVisualGridSelectionPins() {
         const structuralGridCells = boardCanvasEl.children;
         for (let i = 1; i <= 80; i++) {
@@ -617,7 +594,6 @@
         }
     }
 
-    // Real-Time Matrix Calculations Factory Renderer to match screenshot layout exactly
     function updateGameplayDisplayStageContent() {
         const totalSelectedSpotsCount = sysState.userSelections.length;
         if (totalSelectedSpotsCount === 0) {
@@ -647,28 +623,21 @@
 
         stageDefaultPanelEl.innerHTML = `
             <div class="possible-win-container">
-                <div class="win-headline">Possible win <span style="color:var(--fast-green); font-weight:bold;">${potentialMaxWinAmountVal.toFixed(2)}</span></div>
+                <div class="win-headline">ሊገኝ የሚችል ትርፍ <span style="color:var(--fast-green); font-weight:bold;">${potentialMaxWinAmountVal.toFixed(2)}</span></div>
                 <div class="matrix-table">
-                    <div class="matrix-row"><span class="lbl-mute">Match</span> ${matchesLabelRowMarkup}</div>
-                    <div class="matrix-row"><span class="lbl-mute">Pays</span> ${payoutMultipliersRowMarkup}</div>
+                    <div class="matrix-row"><span class="lbl-mute">ተዛማጅ</span> ${matchesLabelRowMarkup}</div>
+                    <div class="matrix-row"><span class="lbl-mute">ክፍያ</span> ${payoutMultipliersRowMarkup}</div>
                 </div>
                 <div class="horizontal-selection-strip">${selectedBallsChainChipsMarkup}</div>
             </div>
         `;
     }
 
-    // Handles user ticket generation context triggers matching multiple cards operations
     document.getElementById('action-bet-trigger').addEventListener('click', () => {
         if (sysState.isRoundDrawingActive) return;
 
-        // Force a randomized 10 spot card if user fires bet with an empty board canvas matrix selection
         if (sysState.userSelections.length === 0) {
             generateRandomQuickPickSelectionArray();
-        }
-
-        if (sysState.currentRoundTickets.length >= 20) {
-            alert("ማስጠንቀቂያ፡ በአንድ ዙር ከ20 በላይ ቲኬት መያዝ አይቻልም!");
-            return;
         }
 
         if (sysState.balance < sysState.activeStake) {
@@ -676,14 +645,11 @@
             return;
         }
 
-        // Deduct active calculation assets stake margins balance profiles
         sysState.balance -= sysState.activeStake;
 
-        // Mask user name sequences patterns like live app
-        const staticAvailableUserMasks = ["e***v", "k***p", "y***x", "w***m", "b***a"];
+        const staticAvailableUserMasks = ["e***v", "k***p", "y***x", "w***m"];
         const chosenMaskString = staticAvailableUserMasks[Math.floor(Math.random() * staticAvailableUserMasks.length)];
 
-        // Append ticket structure metadata records maps inside active runtime pool context
         sysState.currentRoundTickets.push({
             ticketReferenceId: Math.floor(100000 + Math.random() * 900000),
             userMaskName: chosenMaskString,
@@ -691,7 +657,6 @@
             ticketWagerStake: sysState.activeStake
         });
 
-        // Reset active selections blocks array context fields
         sysState.userSelections = [];
         updateGameplayDisplayStageContent();
         syncVisualGridSelectionPins();
@@ -699,10 +664,9 @@
         rebuildActiveLiveTicketsComponentsFeed();
     });
 
-    // Re-renders the list of pending bets below the controls bar
     function rebuildActiveLiveTicketsComponentsFeed() {
         if(sysState.currentRoundTickets.length === 0) {
-            liveRoundTicketsBucketEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.85rem;">ምንም የተያዘ ቲኬት የለም። ቁጥሮችን መርጠው 'ይጫወቱ' የሚለውን ይጫኑ።</div>`;
+            liveRoundTicketsBucketEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.85rem;">ምንም የተያዘ ቲኬት የለም።</div>`;
             return;
         }
 
@@ -717,12 +681,12 @@
                 <div class="ticket-live-card">
                     <div class="ticket-card-header">
                         <span class="user-mask-tag">${ticketRecord.userMaskName}</span>
-                        <span class="ticket-status-badge">በመጠባበቅ ላይ</span>
+                        <span class="ticket-status-badge">Waiting</span>
                     </div>
                     <div class="ticket-card-balls-row">${innerBallsChipsMarkup}</div>
                     <div class="ticket-card-footer">
-                        <span>ቲኬት ቁጥር: #${ticketRecord.ticketReferenceId}</span>
-                        <span style="font-weight:bold; color:#fff;">የውርርድ መጠን: ${ticketRecord.ticketWagerStake.toFixed(2)} ETB</span>
+                        <span>ID: #${ticketRecord.ticketReferenceId}</span>
+                        <span style="font-weight:bold; color:#fff;">ውርርድ: ${ticketRecord.ticketWagerStake.toFixed(2)} ETB</span>
                     </div>
                 </div>
             `;
@@ -731,15 +695,13 @@
         liveRoundTicketsBucketEl.innerHTML = compoundedLiveTicketsMarkup;
     }
 
-    // MASTER GAME LOOP COUNTDOWN TIMER RUNTIME
     function startMasterSystemClockCountdownLoop() {
         setInterval(() => {
             if (!sysState.isRoundDrawingActive) {
                 if (sysState.countdownTimerSeconds > 0) {
                     sysState.countdownTimerSeconds--;
                     let formattedSecondsString = sysState.countdownTimerSeconds < 10 ? '0' + sysState.countdownTimerSeconds : sysState.countdownTimerSeconds;
-                    systemClockStripTextNode.textContent = `Next Draw: 60s`;
-                    systemClockStripTextNode.innerHTML = `Next Draw: <span style="color:var(--glow-cyan);">00:${formattedSecondsString}</span>`;
+                    systemClockStripTextNode.innerHTML = `Next Draw: <span style="color:var(--glow-cyan); font-weight:bold;">00:${formattedSecondsString}</span>`;
                 } else {
                     executeLiveRoundDrawingSequence();
                 }
@@ -747,9 +709,7 @@
         }, 1000);
     }
 
-    // THE DRAWING PHASE: REMOVES THE GRID TABLE AND DROPS BALLS SLOWLY
     function executeLiveRoundDrawingSequence() {
-        // Enforce fallback ticket validation protocols if user entered countdown conclusion with zero parameters wagers
         if (sysState.currentRoundTickets.length === 0) {
             generateRandomQuickPickSelectionArray();
             sysState.balance -= sysState.activeStake;
@@ -767,58 +727,47 @@
         sysState.isRoundDrawingActive = true;
         sysState.drawnNumbers = [];
 
-        // CRITICAL BUG FIX: Hide the whole number grid table entirely, exactly like the live draw app screen
+        // Hides UI interface panels completely during live execution frame drops
         boardCanvasEl.style.display = 'none';
-        document.getElementById('game-controls-panel').style.display = 'none';
+        document.getElementById('stake-adjuster-panel').style.display = 'none';
+        document.getElementById('wager-trigger-panel').style.display = 'none';
 
-        // Swap top board frame viewport stages visible status profiles
         stageDefaultPanelEl.style.display = 'none';
         stageDrawingPanelEl.style.display = 'flex';
         drawnBasketChipsRowEl.innerHTML = '';
         focusDropSphereEl.textContent = '-';
 
-        let availableBallsDrawPoolList = Array.from({ length: 80 }, (_, orderedIndex) => orderedIndex + 1);
+        let availableBallsDrawPoolList = Array.from({ length: 80 }, (_, i) => i + 1);
         let extractedBallsCounter = 0;
 
-        // Fluid pacing timer loop interval definition logic (550ms for smooth trace tracking)
         let drawIntervalTimerInstance = setInterval(() => {
             if (extractedBallsCounter < 20) {
                 let randomPoolIndexTarget = Math.floor(Math.random() * availableBallsDrawPoolList.length);
                 let selectedExtractedBallValue = availableBallsDrawPoolList.splice(randomPoolIndexTarget, 1)[0];
                 
                 sysState.drawnNumbers.push(selectedExtractedBallValue);
-                
-                // Track number frequencies maps increments indexes parameters
                 sysState.mockFrequencyStatsArray[selectedExtractedBallValue]++;
 
-                // Update UI main drop focal focus element value definitions
                 focusDropSphereEl.textContent = selectedExtractedBallValue;
                 extractedBallsCounter++;
                 drawCountLabelEl.textContent = `${extractedBallsCounter} / 20`;
 
-                // Add small bubble chip tracker node elements inside baseline sub-flex scrolling rows array
                 const ballChipItemNode = document.createElement('div');
                 ballChipItemNode.className = 'small-ball-chip';
                 ballChipItemNode.textContent = selectedExtractedBallValue;
                 drawnBasketChipsRowEl.appendChild(ballChipItemNode);
                 
-                // Autoscroll chips container view axis lines dynamically
                 drawnBasketChipsRowEl.scrollLeft = drawnBasketChipsRowEl.scrollWidth;
-
-                // Dynamically flag matched nodes highlights on live wager ticket items matrices blocks real-time
                 updateLiveTicketCardsWithMatchesRealTime(selectedExtractedBallValue);
-
             } else {
                 clearInterval(drawIntervalTimerInstance);
                 setTimeout(finalizeActiveRoundCalculationsAndLogs, 1500);
             }
-        }, 550); // Decreased speed slightly for smooth animation pacing without errors
+        }, 550); 
     }
 
-    // Dynamic inside updates matching values arrays targets real-time updates highlights loops
     function updateLiveTicketCardsWithMatchesRealTime(currentDroppedBallNumberValue) {
         const structuralLiveTicketHtmlCards = liveRoundTicketsBucketEl.children;
-        
         sysState.currentRoundTickets.forEach((ticketObject, indexPosKey) => {
             if(ticketObject.selectedPicksArray.includes(currentDroppedBallNumberValue)) {
                 const targetCardHtmlContainer = structuralLiveTicketHtmlCards[indexPosKey];
@@ -834,7 +783,6 @@
         });
     }
 
-    // Process accounting logic payouts data mapping storage transfers summaries
     function finalizeActiveRoundCalculationsAndLogs() {
         let totalRoundAggregatedWinnings = 0;
         let builtHistorySubMarkupString = '';
@@ -859,52 +807,42 @@
             builtHistorySubMarkupString += `
                 <div class="ticket-live-card" style="margin-bottom:6px; background:#1c2833; border-color:#2c3e50;">
                     <div class="ticket-card-header">
-                        <span style="font-weight:bold; color:var(--glow-cyan);">ቲኬት #${ticketItem.ticketReferenceId} (${ticketItem.userMaskName})</span>
+                        <span style="font-weight:bold; color:var(--glow-cyan);">티ኬት #${ticketItem.ticketReferenceId}</span>
                         <span style="font-weight:bold; color:${singleTicketCalculatedWinPayout > 0 ? 'var(--fast-green)' : '#e74c3c'}">
                             ${singleTicketCalculatedWinPayout > 0 ? '+' + singleTicketCalculatedWinPayout.toFixed(2) + ' ETB' : 'አልደረሰም'}
                         </span>
                     </div>
                     <div class="ticket-card-balls-row" style="margin:5px 0;">${staticHistoryChipsRowMarkup}</div>
-                    <div class="ticket-card-footer" style="border-color:#2c3e50;">
-                        <span>ማዛመድ፡ ${exactHitsCountTotal} ከ ${ticketItem.selectedPicksArray.length}</span>
-                        <span>ውርርድ፡ ${ticketItem.ticketWagerStake} ETB</span>
-                    </div>
                 </div>
             `;
         });
 
-        // Unshift master log summary packet dictionary inside historical arrays feeds logs 
         sysState.archivedGamesHistory.unshift({
             gameRoundId: sysState.gameRoundId,
             drawnNumbersArray: [...sysState.drawnNumbers],
-            innerTicketsDetailedLogMarkup: builtHistorySubMarkupString,
-            totalRoundWinningsCalculatedSum: totalRoundAggregatedWinnings
+            innerTicketsDetailedLogMarkup: builtHistorySubMarkupString
         });
 
-        // Re-render subpanels tables templates items records
         rebuildHistoryAndPastResultsViewPanels();
         rebuildAnalyticalStatsBarsPanel();
 
-        // Flush tracking records reset loop iterations configurations
         sysState.currentRoundTickets = [];
         sysState.isRoundDrawingActive = false;
         sysState.countdownTimerSeconds = 60;
         sysState.gameRoundId++;
 
-        // Restore core board layout presentation visible matrix status parameters
         stageDrawingPanelEl.style.display = 'none';
         stageDefaultPanelEl.style.display = 'flex';
         boardCanvasEl.style.display = 'grid';
-        document.getElementById('game-controls-panel').style.display = 'grid';
+        document.getElementById('stake-adjuster-panel').style.display = 'grid';
+        document.getElementById('wager-trigger-panel').style.display = 'block';
 
-        // Clear layout update systems views
         updateGameplayDisplayStageContent();
         syncVisualGridSelectionPins();
         syncGlobalStateDisplayMetrics();
         rebuildActiveLiveTicketsComponentsFeed();
     }
 
-    // Regenerate data structural markup elements feeds templates blocks rows
     function rebuildHistoryAndPastResultsViewPanels() {
         const historyContainerEl = document.getElementById('history-panel-wagers-feed');
         const resultsContainerEl = document.getElementById('results-panel-archive-feed');
@@ -913,15 +851,13 @@
         let compiledResultsHtmlRows = '';
 
         sysState.archivedGamesHistory.forEach(historyLogRecord => {
-            // Build History Panel Cards
             compiledHistoryHtmlRows += `
-                <div style="border-left:4px solid var(--fast-green); background:#111920; padding:8px; border-radius:4px; margin-bottom:10px;">
-                    <div style="font-size:0.9rem; font-weight:bold; color:#fff; margin-bottom:6px;">ዙር መለያ (Game ID): #${historyLogRecord.gameRoundId}</div>
+                <div style="background:#111920; padding:8px; border-radius:4px; margin-bottom:10px; border-left: 4px solid var(--fast-green)">
+                    <div style="font-size:0.9rem; font-weight:bold; color:#fff; margin-bottom:6px;">ዙር መለያ: #${historyLogRecord.gameRoundId}</div>
                     ${historyLogRecord.innerTicketsDetailedLogMarkup}
                 </div>
             `;
 
-            // Build Results Panel Cards
             let twentyBallsRowMarkup = '';
             historyLogRecord.drawnNumbersArray.forEach(drawnNumVal => {
                 twentyBallsRowMarkup += `<div class="small-ball-chip" style="background:radial-gradient(circle, #2c3e50, #0f171e); border-color:#34495e;">${drawnNumVal}</div>`;
@@ -930,8 +866,7 @@
             compiledResultsHtmlRows += `
                 <div class="ticket-live-card">
                     <div class="ticket-card-header">
-                        <span style="font-weight:bold; color:var(--glow-cyan);">የጨዋታ ቁጥር: #${historyLogRecord.gameRoundId}</span>
-                        <span style="font-size:0.8rem; color:var(--text-muted);">የወጣበት ሰዓት: ቀጥታ</span>
+                        <span style="font-weight:bold; color:var(--glow-cyan);">ID: #${historyLogRecord.gameRoundId}</span>
                     </div>
                     <div class="ticket-card-balls-row" style="margin-top:4px;">${twentyBallsRowMarkup}</div>
                 </div>
@@ -942,17 +877,14 @@
         if(compiledResultsHtmlRows !== '') resultsContainerEl.innerHTML = compiledResultsHtmlRows;
     }
 
-    // Dynamic Analytical Frequency Graph Rendering Calculations Matrix Engine
     function rebuildAnalyticalStatsBarsPanel() {
         const statsBarsContainerEl = document.getElementById('stats-panel-bars-container');
         let compoundedBarsMarkup = '';
 
-        // Find max baseline parameters to derive fluid percentages configurations rules
         const occurrencesCountValuesArray = Object.values(sysState.mockFrequencyStatsArray);
         const maxSingleOccurrenceValueTrack = Math.max(...occurrencesCountValuesArray, 1);
 
-        // Sort number keys based on frequency counts to present cleanly ordered chart lines profiles
-        for (let i = 1; i <= 9; i++) {
+        for (let i = 1; i <= 10; i++) {
             let currentNumberCountValue = sysState.mockFrequencyStatsArray[i] || 0;
             let barCalculatedPercentageRatio = (currentNumberCountValue / maxSingleOccurrenceValueTrack) * 100;
 
@@ -966,11 +898,9 @@
                 </div>
             `;
         }
-
         statsBarsContainerEl.innerHTML = compoundedBarsMarkup;
     }
 
-    // Generates a random array block of exactly 10 fields matching quick pick triggers
     function generateRandomQuickPickSelectionArray() {
         sysState.userSelections = [];
         while (sysState.userSelections.length < 10) {
@@ -981,13 +911,12 @@
         }
     }
 
-    // Top bar data synchronization refresh engine
     function syncGlobalStateDisplayMetrics() {
         document.getElementById('user-balance-view').textContent = sysState.balance.toFixed(2);
         document.getElementById('round-id-view').textContent = sysState.gameRoundId;
+        document.getElementById('stake-value-lbl').textContent = sysState.activeStake.toFixed(2);
     }
 
-    // Quick Pick button binding trigger setup actions panel configuration
     document.getElementById('action-quick-pick').addEventListener('click', () => {
         if (sysState.isRoundDrawingActive) return;
         generateRandomQuickPickSelectionArray();
@@ -995,7 +924,6 @@
         syncVisualGridSelectionPins();
     });
 
-    // Clear board action bindings logic setup configurations triggers
     document.getElementById('action-clear-board').addEventListener('click', () => {
         if (sysState.isRoundDrawingActive) return;
         sysState.userSelections = [];
@@ -1003,15 +931,27 @@
         syncVisualGridSelectionPins();
     });
 
-    // Stake cycle adjustment interaction increments metrics triggers configurations
-    document.getElementById('action-stake-cycle').addEventListener('click', () => {
+    document.getElementById('stake-plus').addEventListener('click', () => {
         if (sysState.isRoundDrawingActive) return;
-        sysState.activeStake = sysState.activeStake >= 100 ? 10 : sysState.activeStake + 10;
-        document.getElementById('action-stake-cycle').textContent = `- ${sysState.activeStake}.00 +`;
+        sysState.activeStake += 5;
+        syncGlobalStateDisplayMetrics();
         if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
     });
 
-    // Initialize System Core Setup Runtime Engines
+    document.getElementById('stake-minus').addEventListener('click', () => {
+        if (sysState.isRoundDrawingActive || sysState.activeStake <= 5) return;
+        sysState.activeStake -= 5;
+        syncGlobalStateDisplayMetrics();
+        if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
+    });
+
+    document.getElementById('action-double-multiplier').addEventListener('click', () => {
+        if (sysState.isRoundDrawingActive) return;
+        sysState.activeStake *= 2;
+        syncGlobalStateDisplayMetrics();
+        if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
+    });
+
     initializeKenoSystem();
     rebuildActiveLiveTicketsComponentsFeed();
 </script>
