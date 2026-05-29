@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Keno - Accurate Live Replica</title>
+    <title>Fast Keno - Premium Fully Functional Replica</title>
     <style>
         :root {
             --bg-darkest: #0b0f12;
@@ -40,11 +40,11 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            padding-bottom: 70px;
+            padding-bottom: 60px;
             overflow-x: hidden;
         }
 
-        /* Top Brand Strip Header */
+        /* Top Header */
         .fast-header {
             display: flex;
             justify-content: space-between;
@@ -81,7 +81,7 @@
         }
         .pill-val-gold { color: #f59e0b; font-weight: bold; }
 
-        /* Timer Block Layout Tighter */
+        /* Timer Box */
         .timer-strip {
             text-align: center;
             padding: 4px 0;
@@ -94,14 +94,23 @@
             background: #0b0f12;
         }
 
-        /* Core Dynamic Main Screen Stage Area */
+        /* View Content Engine Switcher */
+        .app-view-panel {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .app-view-panel.active-view {
+            display: flex;
+        }
+
+        /* Dynamic Stage Panel */
         .stage-area-container {
             position: relative;
             margin: 0 12px 10px 12px;
             min-height: 175px;
         }
 
-        /* Screen 1: Selection Panel View */
         .display-stage {
             background: #161e25;
             border-radius: 8px;
@@ -127,7 +136,7 @@
             text-align: center;
         }
 
-        /* Screen 2: Animated Live Radar Stream Ball Draw Screen Overlay */
+        /* Live Radar Screen Overlay */
         .radar-draw-stage {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -141,7 +150,6 @@
             overflow: hidden;
         }
 
-        /* Targets target ring arcs background style elements */
         .radar-rings {
             position: absolute;
             width: 130px; height: 130px;
@@ -161,20 +169,17 @@
             position: absolute;
         }
 
-        /* Mega Display Live Active Rolling Ball */
         .mega-ball-focus {
             width: 65px; height: 65px;
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, #5d7899 0%, #1a2b3d 60%, #070d14 100%);
             border: 2px solid #8ba3c2;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.6);
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.9rem;
             font-weight: 900;
             color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
             z-index: 2;
             margin: 0 auto;
             margin-top: 12px;
@@ -188,7 +193,6 @@
             color: var(--text-muted);
         }
 
-        /* Horizontal 2-Row Grid for Dropped Ball Capsules below radar graphics */
         .draw-ball-matrix {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
@@ -209,16 +213,9 @@
             font-weight: bold;
             font-size: 0.8rem;
             color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-            animation: ballPop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        @keyframes ballPop {
-            0% { transform: scale(0.3); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Multiplier Ticket Win Box Table Structure strings */
+        /* Ticket Containers */
         .possible-win-container {
             width: 100%;
             display: flex;
@@ -233,7 +230,6 @@
         .lbl-mute { color: var(--text-muted); width: 42px; }
         .val-white { color: var(--text-light); font-weight: bold; text-align: center; min-width: 24px; }
 
-        /* Selected Horizontal Row Strip Items */
         .horizontal-selection-strip {
             display: flex;
             gap: 5px;
@@ -241,7 +237,6 @@
             overflow-x: auto;
             padding-top: 5px;
         }
-        .horizontal-selection-strip::-webkit-scrollbar { display: none; }
         .strip-box {
             width: 30px; height: 30px;
             background: #1f2a35;
@@ -256,16 +251,22 @@
             flex-shrink: 0;
         }
 
-        /* Number Board Matrix Grid Canvas Configuration */
-        .grid-section {
-            padding: 0 12px;
-            flex-grow: 1;
+        /* Ticket Basket Overlay Counter Badge */
+        .ticket-counter-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #ff9f0a;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
-        .fast-grid-80 {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 5px;
-        }
+
+        /* Grid System Layout */
+        .grid-section { padding: 0 12px; flex-grow: 1; }
+        .fast-grid-80 { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
         .grid-cell {
             aspect-ratio: 1;
             background: var(--bg-grid-cell);
@@ -281,7 +282,6 @@
             position: relative;
         }
 
-        /* Corner status notification indicators exactly matching the screenshots */
         .grid-cell.selected-pin::after {
             content: '';
             position: absolute;
@@ -290,12 +290,8 @@
             border-radius: 50%;
             background-color: #ff3b30;
         }
-        .grid-cell:nth-child(2n).selected-pin::after,
-        .grid-cell:nth-child(5n).selected-pin::after {
-            background-color: var(--glow-cyan);
-        }
+        .grid-cell:nth-child(3n).selected-pin::after { background-color: var(--glow-cyan); }
 
-        /* Hit cells transition into solid emerald blocks */
         .grid-cell.hit-block {
             background: var(--fast-green) !important;
             color: #000 !important;
@@ -303,7 +299,7 @@
         }
         .grid-cell.hit-block::after { display: none; }
 
-        /* Console Operational Controls Panel Footer Strip Layout */
+        /* Action Trays */
         .action-tray {
             padding: 10px 12px;
             display: grid;
@@ -319,12 +315,11 @@
             border-radius: 4px;
             font-weight: bold;
             font-size: 0.85rem;
-            cursor: pointer;
             color: #fff;
             background: #1c2630;
             border: 1px solid #283745;
+            cursor: pointer;
         }
-        .tray-btn:active { opacity: 0.8; }
         .tray-btn.main-play-cta {
             grid-column: span 3;
             background: #1f372a;
@@ -335,7 +330,57 @@
             margin-bottom: 4px;
         }
 
-        /* Bottom Application Bar Navigation Elements */
+        /* Generic Table Pages Layout Styling (History, Results, Stats) */
+        .sub-panel-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .panel-heading-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+        .history-card-row {
+            background: #161e25;
+            border: 1px solid #232e3a;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .card-row-split {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+        .result-ball-row {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .small-ball-chip {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #2b3947;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        .small-ball-chip.match-chip {
+            background: var(--fast-green);
+            color: #000;
+        }
+
+        /* Navigation Menu Footer Elements */
         .bottom-navbar {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -345,6 +390,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             align-items: center;
+            z-index: 10;
         }
         .nav-item {
             font-size: 0.7rem;
@@ -357,7 +403,7 @@
             cursor: pointer;
         }
         .nav-item.active { color: var(--fast-green); }
-        .nav-icon { font-size: 1.05rem; margin-bottom: -1px; }
+        .nav-icon { font-size: 1.05rem; }
     </style>
 </head>
 <body>
@@ -374,39 +420,81 @@
         </div>
     </div>
 
-    <div class="timer-strip" id="countdown-clock">00:15</div>
+    <div class="timer-strip" id="countdown-clock">00:60</div>
 
-    <div class="stage-area-container">
-        <div class="display-stage" id="stage-panel">
-            <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
-            <div class="stage-subprompt">ከ 1 እስከ 80</div>
-        </div>
-
-        <div class="radar-draw-stage" id="radar-stage">
-            <div class="ball-counter-label" id="ball-counter-ui">0 / 20</div>
-            <div class="radar-rings">
-                <div class="mega-ball-focus" id="current-drop-ball">-</div>
+    <div class="app-view-panel active-view" id="view-game">
+        <div class="stage-area-container">
+            <div class="display-stage" id="stage-panel">
+                <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
+                <div class="stage-subprompt">ከ 1 እስከ 80</div>
             </div>
-            <div class="draw-ball-matrix" id="ball-box-wrapper"></div>
+            <div class="ticket-counter-badge" id="ticket-basket-counter" style="display:none;">0 ቲኬቶች ተያዘዋል</div>
+            <div class="radar-draw-stage" id="radar-stage">
+                <div class="ball-counter-label" id="ball-counter-ui">0 / 20</div>
+                <div class="radar-rings"><div class="mega-ball-focus" id="current-drop-ball">-</div></div>
+                <div class="draw-ball-matrix" id="ball-box-wrapper"></div>
+            </div>
+        </div>
+        <div class="grid-section">
+            <div class="fast-grid-80" id="main-canvas"></div>
+        </div>
+        <div class="action-tray">
+            <button class="tray-btn main-play-cta" id="ctrl-bet-display">ይጫወቱ (Bet Ticket)</button>
+            <button class="tray-btn" id="ctrl-bet-cycle">- 10.00 +</button>
+            <button class="tray-btn" id="ctrl-quick">ማስተካከል</button>
+            <button class="tray-btn" id="ctrl-clear">ማጽዳት</button>
         </div>
     </div>
 
-    <div class="grid-section">
-        <div class="fast-grid-80" id="main-canvas"></div>
+    <div class="app-view-panel" id="view-history">
+        <div class="sub-panel-content">
+            <div class="panel-heading-title">የቲኬት ታሪክ (Ticket History)</div>
+            <div id="history-items-container" style="display:flex; flex-direction:column; gap:8px;">
+                <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">እስካሁን ምንም ቲኬት አልተጫወቱም።</div>
+            </div>
+        </div>
     </div>
 
-    <div class="action-tray">
-        <button class="tray-btn main-play-cta" id="ctrl-bet-display">ይጫወቱ</button>
-        <button class="tray-btn" id="ctrl-bet-cycle">- 10.00 +</button>
-        <button class="tray-btn" id="ctrl-quick">ማስተካከል</button>
-        <button class="tray-btn" id="ctrl-clear">ማጽዳት</button>
+    <div class="app-view-panel" id="view-results">
+        <div class="sub-panel-content">
+            <div class="panel-heading-title">የእጣ ውጤቶች (Game Results)</div>
+            <div id="results-items-container" style="display:flex; flex-direction:column; gap:8px;">
+                <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">ምንም ያለፉ ውጤቶች የሉም።</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-view-panel" id="view-stats">
+        <div class="sub-panel-content">
+            <div class="panel-heading-title">ስታቲስቲክስ (Statistics)</div>
+            <div class="history-card-row">
+                <div class="card-row-split" style="font-weight:bold; color:var(--fast-green);"><span>ሙቅ ቁጥሮች (Hot Numbers)</span></div>
+                <div class="result-ball-row">
+                    <div class="small-ball-chip" style="background:#ff9f0a; color:#000;">24</div>
+                    <div class="small-ball-chip" style="background:#ff9f0a; color:#000;">47</div>
+                    <div class="small-ball-chip" style="background:#ff9f0a; color:#000;">11</div>
+                    <div class="small-ball-chip" style="background:#ff9f0a; color:#000;">79</div>
+                    <div class="small-ball-chip" style="background:#ff9f0a; color:#000;">52</div>
+                </div>
+            </div>
+            <div class="history-card-row" style="margin-top:8px;">
+                <div class="card-row-split" style="font-weight:bold; color:var(--glow-cyan);"><span>ቀዝቃዛ ቁጥሮች (Cold Numbers)</span></div>
+                <div class="result-ball-row">
+                    <div class="small-ball-chip" style="background:#0a84ff;">03</div>
+                    <div class="small-ball-chip" style="background:#0a84ff;">68</div>
+                    <div class="small-ball-chip" style="background:#0a84ff;">14</div>
+                    <div class="small-ball-chip" style="background:#0a84ff;">33</div>
+                    <div class="small-ball-chip" style="background:#0a84ff;">57</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="bottom-navbar">
-        <div class="nav-item active"><span class="nav-icon">🎮</span><span>ጨዋታ</span></div>
-        <div class="nav-item"><span class="nav-icon">⏳</span><span>ታሪክ</span></div>
-        <div class="nav-item"><span class="nav-icon">✔</span><span>ውጤቶች</span></div>
-        <div class="nav-item"><span class="nav-icon">📊</span><span>ስታቲስቲክስ</span></div>
+        <div class="nav-item active" onclick="switchActiveView('view-game', this)"><span class="nav-icon">🎮</span><span>ጨዋታ</span></div>
+        <div class="nav-item" onclick="switchActiveView('view-history', this)"><span class="nav-icon">⏳</span><span>ታሪክ</span></div>
+        <div class="nav-item" onclick="switchActiveView('view-results', this)"><span class="nav-icon">✔</span><span>ውጤቶች</span></div>
+        <div class="nav-item" onclick="switchActiveView('view-stats', this)"><span class="nav-icon">📊</span><span>ስታቲስቲክስ</span></div>
     </div>
 </div>
 
@@ -424,9 +512,11 @@
         balance: 1000.00,
         bet: 10,
         selected: [],
+        ticketsBasket: [], // Stores multi-ticket list arrays before draw
+        historicalGamesLogs: [], 
         drawn: [],
         isDrawing: false,
-        timerVal: 15,
+        timerVal: 60, // 60s countdown matching rules
         gameId: 233987
     };
 
@@ -437,6 +527,15 @@
     const currentDropBallEl = document.getElementById('current-drop-ball');
     const ballCounterUiEl = document.getElementById('ball-counter-ui');
     const ballContainerEl = document.getElementById('ball-box-wrapper');
+    const basketCounterUiEl = document.getElementById('ticket-basket-counter');
+
+    function switchActiveView(viewId, navNode) {
+        document.querySelectorAll('.app-view-panel').forEach(p => p.classList.remove('active-view'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        document.getElementById(viewId).classList.add('active-view');
+        navNode.classList.add('active');
+    }
 
     function startGlobalTimerLoop() {
         setInterval(() => {
@@ -465,11 +564,6 @@
 
     function handleCellSelection(num) {
         if (appState.isDrawing) return;
-        
-        if (appState.drawn.length > 0) {
-            appState.drawn = [];
-        }
-
         const index = appState.selected.indexOf(num);
         if (index > -1) {
             appState.selected.splice(index, 1);
@@ -477,7 +571,6 @@
             if (appState.selected.length >= 10) return; 
             appState.selected.push(num);
         }
-        
         updateDisplayStage();
         syncVisualGrid();
     }
@@ -498,17 +591,14 @@
         const maxMultiplier = maxMatch > 0 ? pickOdds[maxMatch] : 0;
         const possibleWinAmount = appState.bet * maxMultiplier;
 
-        let matchLabels = '';
-        let paysLabels = '';
+        let matchLabels = ''; let paysLabels = '';
         matches.forEach(m => {
             matchLabels += `<div class="val-white">${m}</div>`;
             paysLabels += `<div class="val-white" style="color:var(--fast-green)">x${pickOdds[m]}</div>`;
         });
 
         let ticketBoxesHtml = '';
-        appState.selected.forEach(num => {
-            ticketBoxesHtml += `<div class="strip-box">${num}</div>`;
-        });
+        appState.selected.forEach(num => { ticketBoxesHtml += `<div class="strip-box">${num}</div>`; });
 
         stagePanelEl.innerHTML = `
             <div class="possible-win-container">
@@ -517,9 +607,7 @@
                     <div class="matrix-row"><span class="lbl-mute">Match</span> ${matchLabels}</div>
                     <div class="matrix-row"><span class="lbl-mute">Pays</span> ${paysLabels}</div>
                 </div>
-                <div class="horizontal-selection-strip">
-                    ${ticketBoxesHtml}
-                </div>
+                <div class="horizontal-selection-strip">${ticketBoxesHtml}</div>
             </div>
         `;
     }
@@ -529,41 +617,74 @@
         for (let i = 1; i <= 80; i++) {
             const cell = cells[i - 1];
             cell.className = 'grid-cell';
-
-            const isSelected = appState.selected.includes(i);
-            const isDrawn = appState.drawn.includes(i);
-
-            if (isSelected && isDrawn) {
-                cell.classList.add('hit-block');
-            } else if (isSelected) {
+            if (appState.selected.includes(i)) {
                 cell.classList.add('selected-pin');
             }
         }
-
         document.getElementById('top-balance').textContent = appState.balance.toFixed(2);
         document.getElementById('game-id-view').textContent = appState.gameId;
-        
-        document.getElementById('ctrl-clear').disabled = appState.isDrawing;
-        document.getElementById('ctrl-quick').disabled = appState.isDrawing;
-        document.getElementById('ctrl-bet-cycle').disabled = appState.isDrawing;
     }
 
-    function executeDrawCycle() {
+    // "ይጫወቱ" Ticket Submission Action
+    document.getElementById('ctrl-bet-display').addEventListener('click', () => {
+        if (appState.isDrawing) return;
         if (appState.selected.length === 0) {
             forcedQuickPick();
         }
+        if (appState.ticketsBasket.length >= 20) {
+            alert("ማስጠንቀቂያ፡ በአንድ ዙር ከ20 በላይ ቲኬት መግዛት አይችሉም!");
+            return;
+        }
+        if (appState.balance < appState.bet) {
+            alert("በቂ ቀሪ ሂሳብ የሎትም!");
+            return;
+        }
+
+        // Deduct Stake & Add Ticket
+        appState.balance -= appState.bet;
+        appState.ticketsBasket.push({
+            ticketId: Math.floor(100000 + Math.random() * 900000),
+            picks: [...appState.selected],
+            stake: appState.bet
+        });
+
+        // Update Basket Tracker Display Badge
+        basketCounterUiEl.style.display = 'block';
+        basketCounterUiEl.textContent = `${appState.ticketsBasket.length} ቲኬቶች ተያዘዋል`;
+
+        // Clear Selection Board for the next ticket setup
+        appState.selected = [];
+        updateDisplayStage();
+        syncVisualGrid();
+    });
+
+    function executeDrawCycle() {
+        // Enforce a quick pick if the player hasn't created any ticket yet
+        if (appState.ticketsBasket.length === 0) {
+            forcedQuickPick();
+            appState.balance -= appState.bet;
+            appState.ticketsBasket.push({
+                ticketId: Math.floor(100000 + Math.random() * 900000),
+                picks: [...appState.selected],
+                stake: appState.bet
+            });
+            appState.selected = [];
+        }
 
         appState.isDrawing = true;
-        appState.balance -= appState.bet;
         appState.drawn = [];
-        syncVisualGrid();
+        
+        // Switch view automatically to Game tab to see the live draw
+        document.querySelectorAll('.app-view-panel').forEach(p => p.classList.remove('active-view'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('view-game').classList.add('active-view');
+        document.querySelector('.nav-item').classList.add('active');
 
-        // Swap interface views completely smoothly without layout metric changes
         stagePanelEl.style.display = 'none';
+        basketCounterUiEl.style.display = 'none';
         radarStageEl.style.display = 'flex';
         ballContainerEl.innerHTML = '';
         currentDropBallEl.textContent = '-';
-        ballCounterUiEl.textContent = '0 / 20';
 
         let drawPool = Array.from({length: 80}, (_, i) => i + 1);
         let count = 0;
@@ -572,48 +693,117 @@
             if (count < 20) {
                 let rIdx = Math.floor(Math.random() * drawPool.length);
                 let selectedBall = drawPool.splice(rIdx, 1)[0];
-                
                 appState.drawn.push(selectedBall);
                 
-                // Update focus panel graphics
                 currentDropBallEl.textContent = selectedBall;
                 count++;
                 ballCounterUiEl.textContent = `${count} / 20`;
 
-                // Inject capsule tracking chip nodes
                 const ballNode = document.createElement('div');
                 ballNode.className = 'ball-capsule';
                 ballNode.textContent = selectedBall;
                 ballContainerEl.appendChild(ballNode);
 
-                syncVisualGrid();
+                // Highlight hit block arrays on board in real-time
+                const cells = canvasEl.children;
+                if (appState.ticketsBasket.some(t => t.picks.includes(selectedBall))) {
+                    cells[selectedBall - 1].classList.add('hit-block');
+                }
+
+                count++;
             } else {
                 clearInterval(interval);
-                setTimeout(finalizeCalculations, 1000);
+                setTimeout(finalizeCalculations, 1200);
             }
-        }, 250); // Matches the real app's visual drop pace perfectly
+        }, 220);
     }
 
     function finalizeCalculations() {
-        const spotsCount = appState.selected.length;
-        const hits = appState.selected.filter(n => appState.drawn.includes(n)).length;
-        
-        const pickOdds = CASINO_ODDS_MAP[spotsCount] || {};
-        if (pickOdds[hits]) {
-            let winPrize = appState.bet * pickOdds[hits];
-            appState.balance += winPrize;
-        }
+        let roundTotalWin = 0;
+        let loggedTicketsHtml = '';
 
+        appState.ticketsBasket.forEach(ticket => {
+            const hitsArray = ticket.picks.filter(n => appState.drawn.includes(n));
+            const hitsCount = hitsArray.length;
+            const pickOdds = CASINO_ODDS_MAP[ticket.picks.length] || {};
+            let payoutMultiplier = pickOdds[hitsCount] || 0;
+            let ticketWin = ticket.stake * payoutMultiplier;
+            
+            roundTotalWin += ticketWin;
+            appState.balance += ticketWin;
+
+            // Generate detailed inner chip matrix labels
+            let chipsMarkup = '';
+            ticket.picks.forEach(p => {
+                let isHit = appState.drawn.includes(p) ? 'match-chip' : '';
+                chipsMarkup += `<div class="small-ball-chip ${isHit}">${p}</div>`;
+            });
+
+            loggedTicketsHtml += `
+                <div class="history-card-row">
+                    <div class="card-row-split"><span>ትኬት ID: #${ticket.ticketId}</span> <span style="color:#ff9f0a">ዋጋ: ${ticket.stake} ETB</span></div>
+                    <div class="result-ball-row">${chipsMarkup}</div>
+                    <div class="card-row-split" style="margin-top:4px; font-weight:bold;">
+                        <span>ማዛመድ: ${hitsCount}/${ticket.picks.length}</span>
+                        <span style="color:${ticketWin > 0 ? 'var(--fast-green)' : '#ef4444'}">አሸናፊነቱ: ${ticketWin.toFixed(2)} ETB</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Add historical log to feed
+        appState.historicalGamesLogs.unshift({
+            gameId: appState.gameId,
+            drawnBalls: [...appState.drawn],
+            ticketsLogsMarkup: loggedTicketsHtml,
+            totalWin: roundTotalWin
+        });
+
+        // Re-render History and Results components views
+        rebuildHistoryAndResultPanels();
+
+        appState.ticketsBasket = [];
         appState.isDrawing = false;
-        appState.timerVal = 15; 
-        appState.gameId += 1;   
+        appState.timerVal = 60; // Reset back to full 60 seconds
+        appState.gameId += 1;
 
-        // Swap panel views back smoothly
         radarStageEl.style.display = 'none';
         stagePanelEl.style.display = 'flex';
-
-        updateDisplayStage();
+        
+        initCanvas();
         syncVisualGrid();
+    }
+
+    function rebuildHistoryAndResultPanels() {
+        const historyContainer = document.getElementById('history-items-container');
+        const resultsContainer = document.getElementById('results-items-container');
+        
+        let historyHtml = '';
+        let resultsHtml = '';
+
+        appState.historicalGamesLogs.forEach(log => {
+            historyHtml += `
+                <div style="border-left: 4px solid var(--fast-green); padding-left:4px; margin-bottom:10px;">
+                    <div style="font-size:0.85rem; font-weight:bold; padding:4px 0;">ዙር መለያ (Game ID): #${log.gameId}</div>
+                    ${log.ticketsLogsMarkup}
+                </div>
+            `;
+
+            let ballsRowMarkup = '';
+            log.drawnBalls.forEach(b => {
+                ballsRowMarkup += `<div class="small-ball-chip" style="background:radial-gradient(circle, #506680, #1e2936);">${b}</div>`;
+            });
+
+            resultsHtml += `
+                <div class="history-card-row">
+                    <div class="card-row-split" style="font-weight:bold; color:var(--glow-cyan);"><span>የጨዋታ ቁጥር: #${log.gameId}</span></div>
+                    <div class="result-ball-row">${ballsRowMarkup}</div>
+                </div>
+            `;
+        });
+
+        historyContainer.innerHTML = historyHtml;
+        resultsContainer.innerHTML = resultsHtml;
     }
 
     function forcedQuickPick() {
@@ -625,20 +815,21 @@
     }
 
     document.getElementById('ctrl-clear').addEventListener('click', () => {
+        if (appState.isDrawing) return;
         appState.selected = [];
-        appState.drawn = [];
         updateDisplayStage();
         syncVisualGrid();
     });
 
     document.getElementById('ctrl-quick').addEventListener('click', () => {
-        appState.drawn = [];
+        if (appState.isDrawing) return;
         forcedQuickPick();
         updateDisplayStage();
         syncVisualGrid();
     });
 
     document.getElementById('ctrl-bet-cycle').addEventListener('click', () => {
+        if (appState.isDrawing) return;
         appState.bet = appState.bet >= 100 ? 10 : appState.bet + 10;
         document.getElementById('ctrl-bet-cycle').textContent = `- ${appState.bet}.00 +`;
         if (appState.selected.length > 0) updateDisplayStage();
