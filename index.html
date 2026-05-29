@@ -2,958 +2,644 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fast Keno - Accurate Layout Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        :root {
-            --bg-darkest: #0e1318;
-            --bg-panel: #161f26;
-            --bg-grid-cell: #202b36;
-            --fast-green: #2ecc71;
-            --text-light: #ffffff;
-            --text-muted: #7f8c8d;
-            --glow-cyan: #00f3ff;
-            --accent-gold: #f1c40f;
-            --cell-border: #2c3e50;
+        /* Custom slow-speed turning rotation for the background graphics */
+        @keyframes slowRadarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-radar-slow {
+            animation: slowRadarSpin 16s linear infinite;
+        }
+        .animate-radar-slow-reverse {
+            animation: slowRadarSpin 24s linear infinite reverse;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', -apple-system, sans-serif;
-            user-select: none;
+        /* Digital Timer Font Style matching native layout with precise neon cyan glow filter */
+        .neon-timer-text {
+            font-family: 'Courier New', Courier, monospace;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.85);
         }
 
-        body {
-            background-color: #090d10;
-            color: var(--text-light);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .phone-wrapper {
-            width: 100%;
-            max-width: 480px;
-            background: var(--bg-darkest);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            padding-bottom: 20px;
-            overflow-y: auto;
-            border-left: 1px solid #1c2630;
-            border-right: 1px solid #1c2630;
-        }
-
-        /* Top Header Area Elements */
-        .fast-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 14px;
-            background: #090c0f;
-            border-bottom: 1px solid #172129;
-        }
-
-        .brand-logo {
-            font-style: italic;
-            font-weight: 900;
-            line-height: 1;
-        }
-        .brand-logo div:first-child { color: var(--text-light); font-size: 0.8rem; letter-spacing: 0.5px; }
-        .brand-logo div:last-child { color: var(--fast-green); font-size: 1.2rem; margin-top: -1px; }
-
-        .header-meta {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .meta-pill {
-            background: #17222c;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            border: 1px solid #253341;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .pill-val-gold { color: #f39c12; font-weight: bold; }
-
-        /* Real Application Styled Digital Timer Block */
-        .timer-strip {
-            text-align: center;
-            padding: 6px 0;
-            font-family: monospace;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--glow-cyan);
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-            letter-spacing: 2px;
-            background: #090c0f;
-        }
-
-        /* Dynamic Visual Prompt Info Display Stage Board Box Panel */
-        .display-stage-wrapper {
-            background: #151e26;
-            border-radius: 12px;
-            padding: 14px;
-            min-height: 155px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border: 1px solid #22303d;
-            margin: 0 12px 12px 12px;
-            position: relative;
-        }
-
-        .stage-prompt {
-            font-size: 1.7rem;
-            font-weight: bold;
-            text-align: center;
-            color: var(--text-light);
-            line-height: 1.3;
-        }
-        .stage-subprompt {
-            color: var(--fast-green);
-            font-weight: bold;
-            margin-top: 8px;
-            font-size: 1.2rem;
-            text-align: center;
-        }
-
-        /* Live Drawing Radar Layout Layer Viewport Screen */
-        .radar-draw-stage {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            min-height: 180px;
-            position: relative;
-        }
-        .radar-header-lbl {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: bold;
-        }
-        .radar-center-focus {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #526f8c 0%, #1a2736 70%, #0c131a 100%);
-            border: 3px solid #7ea4cc;
-            box-shadow: 0 0 15px rgba(126, 164, 204, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #fff;
-            margin: 10px auto;
-        }
-        .horizontal-draw-basket {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding: 8px 0;
-            scrollbar-width: none;
-        }
-
-        /* Dynamic Ticket Builder Table Chains Frame Box */
-        .possible-win-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
-        }
-        .win-headline { font-size: 1.2rem; font-weight: bold; color: var(--text-light); }
-        .win-headline span { color: var(--fast-green); }
-        .matrix-table { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
-        .matrix-row { display: flex; gap: 12px; font-size: 0.85rem; align-items: center; }
-        .lbl-mute { color: var(--text-muted); width: 55px; }
-        .val-white { color: var(--text-light); font-weight: bold; text-align: center; min-width: 26px; }
-
-        .horizontal-selection-strip {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-top: 6px;
-        }
-        .strip-box {
-            width: 32px; height: 32px;
-            background: #202b36;
-            border: 1px solid #2e3d4d;
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        /* 80 Grid System Array Panel Matrix styling */
-        .fast-grid-80 {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 6px;
-            padding: 0 12px;
-            margin-bottom: 14px;
-            transition: opacity 0.2s ease;
-        }
-        .grid-cell {
-            aspect-ratio: 1;
-            background: var(--bg-grid-cell);
-            border: 1px solid #283745;
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1rem;
-            color: #95a5a6;
-            cursor: pointer;
-            position: relative;
-        }
-        .grid-cell.selected-pin {
-            background-color: #27ae60 !important;
-            color: #fff !important;
-        }
-
-        /* Integrated Control Controls Action Grid Row */
-        .control-input-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 6px;
-            padding: 0 12px;
-            margin-bottom: 8px;
-        }
-        .input-block {
-            background: #1c2833;
-            border: 1px solid #2c3e50;
-            border-radius: 6px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 10px;
-            color: #fff;
-            font-weight: bold;
-        }
-        .control-btn-action {
-            background: #1c2833;
-            border: 1px solid #2c3e50;
-            border-radius: 6px;
-            color: #fff;
-            font-weight: bold;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .control-btn-action.active-accent {
-            color: var(--fast-green);
-        }
-        .math-btn {
-            cursor: pointer;
-            padding: 5px 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Main Wager Trigger Box Layout */
-        .main-wager-container {
-            padding: 0 12px;
-            margin-bottom: 14px;
-        }
-        .play-submit-cta {
-            width: 100%;
-            background: #1e8449;
-            color: #fff;
-            border: 1px solid #27ae60;
-            border-radius: 6px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding: 12px 0;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        /* Navigation Menu Tab Strips - Placed Below Action Block */
-        .tab-navigation-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            border-bottom: 2px solid #18222b;
-            background: #0d141a;
-            margin-bottom: 10px;
-        }
-        .tab-btn {
-            padding: 12px 0;
-            text-align: center;
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-        .tab-btn.active-tab {
-            color: var(--fast-green);
-            border-bottom: 3px solid var(--fast-green);
-            background: rgba(46, 204, 113, 0.05);
-        }
-
-        /* Switchable Screen Panels Wrapper Engine layout templates */
-        .app-view-panel {
-            display: none;
-            flex-direction: column;
-            padding: 0 12px;
-        }
-        .app-view-panel.active-view {
-            display: flex;
-        }
-
-        /* Real Application Style Multi-Ticket List Feed Row Cards */
-        .tickets-list-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 8px;
-            width: 100%;
-        }
-        .ticket-live-card {
-            background: #161f26;
-            border: 1px solid #23303c;
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .ticket-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-        .user-mask-tag { color: var(--fast-green); font-weight: bold; }
-        .ticket-status-badge {
-            background: rgba(241, 196, 15, 0.15);
-            color: var(--accent-gold);
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            animation: pulse-wait 1.5s infinite;
-        }
-        @keyframes pulse-wait {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-        .ticket-card-balls-row {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .small-ball-chip {
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #34495e, #1a252f);
-            border: 1px solid #465c70;
-            font-size: 0.85rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-        }
-        .small-ball-chip.matched-hit {
-            background: radial-gradient(circle, #2ecc71, #27ae60) !important;
-            border-color: #2ecc71 !important;
-            color: #000 !important;
-        }
-        .ticket-card-footer {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            border-top: 1px solid #202b36;
-            padding-top: 6px;
-            margin-top: 2px;
-        }
-
-        /* Performance Analytical Stats Bars */
-        .stat-bar-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 8px 0;
-        }
-        .stat-bar-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-        .stat-num-lbl { width: 24px; font-weight: bold; color: var(--text-muted); }
-        .stat-progress-track {
-            flex-grow: 1;
-            height: 8px;
-            background: #1c2833;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .stat-fill-progress {
-            height: 100%;
-            background: var(--fast-green);
-            border-radius: 4px;
-        }
-        .stat-count-val { width: 30px; text-align: right; font-weight: bold; color: var(--text-light); }
-
-        .sub-panel-title {
-            font-size: 1.15rem;
-            font-weight: bold;
-            color: var(--text-light);
-            margin: 6px 0 12px 0;
-        }
+        /* Hidden scrollbars for horizontal list tracking elements */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-[#090d10] text-white font-sans antialiased select-none flex justify-center min-h-screen">
 
-<div class="phone-wrapper">
-    <div class="fast-header">
-        <div class="brand-logo">
-            <div>FAST</div>
-            <div>KENO</div>
-        </div>
-        <div class="header-meta">
-            <div class="meta-pill"><span class="pill-val-gold" id="user-balance-view">1000.00</span> <span style="font-size:0.7rem;color:var(--text-muted)">ETB</span></div>
-            <div class="meta-pill">ID: <span id="round-id-view">233987</span> <span style="color:var(--fast-green)">✔</span></div>
-        </div>
-    </div>
-
-    <div class="timer-strip" id="game-clock-view">Next Draw: 00:60</div>
-
-    <div class="display-stage-wrapper">
-        <div id="stage-info-default" class="possible-win-container">
-            <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
-            <div class="stage-subprompt">ከ 1 እስከ 80</div>
-        </div>
-        <div class="radar-draw-stage" id="stage-info-drawing">
-            <div class="radar-header-lbl"><span>ቀጥታ እጣ ማውጣት (Live Draw)</span> <span id="draw-count-lbl">0 / 20</span></div>
-            <div class="radar-center-focus" id="focus-drop-sphere">-</div>
-            <div class="horizontal-draw-basket" id="drawn-basket-chips-row"></div>
-        </div>
-    </div>
-
-    <div class="fast-grid-80" id="game-board-canvas"></div>
-
-    <div class="control-input-row" id="stake-adjuster-panel">
-        <div class="input-block">
-            <span class="math-btn" id="stake-minus">−</span>
-            <span id="stake-value-lbl">10.00</span>
-            <span class="math-btn" id="stake-plus">+</span>
-        </div>
-        <button class="control-btn-action active-accent" id="action-double-multiplier">X2</button>
-        <button class="control-btn-action" id="action-quick-pick">ማክስ</button>
-        <button class="control-btn-action" id="action-clear-board">⚙</button>
-    </div>
-
-    <div class="main-wager-container" id="wager-trigger-panel">
-        <button class="play-submit-cta" id="action-bet-trigger">ይጫወቱ</button>
-    </div>
-
-    <div class="tab-navigation-strip">
-        <div class="tab-btn active-tab" onclick="switchMainAppPanel('view-game', this)">🎰 ጨዋታ</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-history', this)">⏳ ታሪክ</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-results', this)">✔ ውጤቶች</div>
-        <div class="tab-btn" onclick="switchMainAppPanel('view-stats', this)">📊 ስታቲስቲክስ</div>
-    </div>
-
-    <div class="app-view-panel active-view" id="view-game">
-        <div style="margin-bottom: 20px;">
-            <div style="font-size:0.9rem; font-weight:bold; color:var(--text-muted); margin-top:5px;">የእኔ ቲኬቶች (My Round Tickets)</div>
-            <div class="tickets-list-wrapper" id="live-round-tickets-bucket"></div>
-        </div>
-    </div>
-
-    <div class="app-view-panel" id="view-history">
-        <div class="sub-panel-title">የተጫወቱ ቲኬቶች ታሪክ (My Games History)</div>
-        <div class="tickets-list-wrapper" id="history-panel-wagers-feed">
-            <div style="text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem;">ያለፉ የቲኬት ታሪኮች እዚህ ይታያሉ።</div>
-        </div>
-    </div>
-
-    <div class="app-view-panel" id="view-results">
-        <div class="sub-panel-title">የመጨረሻዎቹ 100 ዙር ውጤቶች (Last 100 Rounds Feed)</div>
-        <div class="tickets-list-wrapper" id="results-panel-archive-feed"></div>
-    </div>
-
-    <div class="app-view-panel" id="view-stats">
-        <div class="sub-panel-title">የመጨረሻዎቹ 100 ዙር ስታቲስቲክስ</div>
-        <div class="stat-bar-container" id="stats-panel-bars-container"></div>
-    </div>
-</div>
-
-<script>
-    // System Standard Casino Odds Matrix mapping specifications configurations
-    const GAME_PROFIT_RATIO_CHART = {
-        1: { 1: 3.5 }, 2: { 2: 15 }, 3: { 2: 2, 3: 50 },
-        4: { 2: 1, 3: 5, 4: 150 }, 5: { 3: 3, 4: 15, 5: 500 },
-        6: { 3: 2, 4: 10, 5: 50, 6: 1500 }, 7: { 4: 5, 5: 25, 6: 150, 7: 3000 },
-        8: { 4: 2, 5: 15, 6: 75, 7: 500, 8: 10000 },
-        9: { 5: 10, 6: 50, 7: 250, 8: 1500, 9: 25000 },
-        10: { 5: 5, 6: 25, 7: 125, 8: 1000, 9: 5000, 10: 100000 }
-    };
-
-    let sysState = {
-        balance: 1000.00,
-        activeStake: 10,
-        userSelections: [],
-        currentRoundTickets: [], 
-        archivedGamesHistory: [],
-        drawnNumbers: [],
-        isRoundDrawingActive: false,
-        countdownTimerSeconds: 60,
-        gameRoundId: 233987,
-        mockFrequencyStatsArray: {}
-    };
-
-    const boardCanvasEl = document.getElementById('game-board-canvas');
-    const stageDefaultPanelEl = document.getElementById('stage-info-default');
-    const stageDrawingPanelEl = document.getElementById('stage-info-drawing');
-    const systemClockStripTextNode = document.getElementById('game-clock-view');
-    const focusDropSphereEl = document.getElementById('focus-drop-sphere');
-    const drawCountLabelEl = document.getElementById('draw-count-lbl');
-    const drawnBasketChipsRowEl = document.getElementById('drawn-basket-chips-row');
-    const liveRoundTicketsBucketEl = document.getElementById('live-round-tickets-bucket');
-
-    function switchMainAppPanel(targetPanelId, navigationTriggerNode) {
-        document.querySelectorAll('.app-view-panel').forEach(panel => panel.classList.remove('active-view'));
-        document.querySelectorAll('.tab-btn').forEach(tabBtn => tabBtn.classList.remove('active-tab'));
-
-        document.getElementById(targetPanelId).classList.add('active-view');
-        if(navigationTriggerNode) navigationTriggerNode.classList.add('active-tab');
-    }
-
-    function initializeKenoSystem() {
-        for(let i=1; i<=80; i++) {
-            sysState.mockFrequencyStatsArray[i] = Math.floor(Math.random() * 22) + 12;
-        }
-        build80NumbersSelectionGrid();
-        rebuildAnalyticalStatsBarsPanel();
-        syncGlobalStateDisplayMetrics();
-        startMasterSystemClockCountdownLoop();
-    }
-
-    function build80NumbersSelectionGrid() {
-        boardCanvasEl.innerHTML = '';
-        for (let i = 1; i <= 80; i++) {
-            const gridCellNode = document.createElement('div');
-            gridCellNode.className = 'grid-cell';
-            gridCellNode.textContent = i;
-            gridCellNode.addEventListener('click', () => handleGridSelectionAction(i));
-            boardCanvasEl.appendChild(gridCellNode);
-        }
-    }
-
-    function handleGridSelectionAction(cellValueNumber) {
-        if (sysState.isRoundDrawingActive) return;
-
-        const selectionIndexPosition = sysState.userSelections.indexOf(cellValueNumber);
-        if (selectionIndexPosition > -1) {
-            sysState.userSelections.splice(selectionIndexPosition, 1);
-        } else {
-            if (sysState.userSelections.length >= 10) return;
-            sysState.userSelections.push(cellValueNumber);
-        }
-
-        updateGameplayDisplayStageContent();
-        syncVisualGridSelectionPins();
-    }
-
-    function syncVisualGridSelectionPins() {
-        const structuralGridCells = boardCanvasEl.children;
-        for (let i = 1; i <= 80; i++) {
-            const targetCellNode = structuralGridCells[i - 1];
-            targetCellNode.className = 'grid-cell';
-            if (sysState.userSelections.includes(i)) {
-                targetCellNode.classList.add('selected-pin');
-            }
-        }
-    }
-
-    function updateGameplayDisplayStageContent() {
-        const totalSelectedSpotsCount = sysState.userSelections.length;
-        if (totalSelectedSpotsCount === 0) {
-            stageDefaultPanelEl.innerHTML = `
-                <div class="stage-prompt">10 ቁጥሮችን<br>ይምረጡ</div>
-                <div class="stage-subprompt">ከ 1 እስከ 80</div>
-            `;
-            return;
-        }
-
-        const calculatedOddsTierMap = GAME_PROFIT_RATIO_CHART[totalSelectedSpotsCount] || {};
-        const orderedHitsKeysArray = Object.keys(calculatedOddsTierMap).map(Number).sort((x, y) => x - y);
-        const maxPayoutMultiplierRatio = orderedHitsKeysArray.length > 0 ? Math.max(...orderedHitsKeysArray) : 0;
-        const potentialMaxWinAmountVal = sysState.activeStake * (calculatedOddsTierMap[maxPayoutMultiplierRatio] || 0);
-
-        let matchesLabelRowMarkup = '';
-        let payoutMultipliersRowMarkup = '';
-        orderedHitsKeysArray.forEach(hitCountKey => {
-            matchesLabelRowMarkup += `<div class="val-white">${hitCountKey}</div>`;
-            payoutMultipliersRowMarkup += `<div class="val-white" style="color:var(--fast-green)">x${calculatedOddsTierMap[hitCountKey]}</div>`;
-        });
-
-        let selectedBallsChainChipsMarkup = '';
-        sysState.userSelections.forEach(selectedNumber => {
-            selectedBallsChainChipsMarkup += `<div class="strip-box">${selectedNumber}</div>`;
-        });
-
-        stageDefaultPanelEl.innerHTML = `
-            <div class="possible-win-container">
-                <div class="win-headline">ሊገኝ የሚችል ትርፍ <span style="color:var(--fast-green); font-weight:bold;">${potentialMaxWinAmountVal.toFixed(2)}</span></div>
-                <div class="matrix-table">
-                    <div class="matrix-row"><span class="lbl-mute">ተዛማጅ</span> ${matchesLabelRowMarkup}</div>
-                    <div class="matrix-row"><span class="lbl-mute">ክፍያ</span> ${payoutMultipliersRowMarkup}</div>
-                </div>
-                <div class="horizontal-selection-strip">${selectedBallsChainChipsMarkup}</div>
+    <div class="w-full max-w-[480px] bg-[#0e1318] flex flex-col justify-between relative border-x border-[#1c2630]/60 min-h-screen">
+        
+        <div class="px-4 py-2.5 flex justify-between items-center bg-[#090c0f] border-b border-[#172129]">
+            <div class="flex flex-col font-black italic tracking-tight leading-none text-xl">
+                <span>FAST</span>
+                <span class="text-[#2ecc71]">KENO</span>
             </div>
-        `;
-    }
-
-    document.getElementById('action-bet-trigger').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive) return;
-
-        if (sysState.userSelections.length === 0) {
-            generateRandomQuickPickSelectionArray();
-        }
-
-        if (sysState.balance < sysState.activeStake) {
-            alert("ይቅርታ፣ በቂ ቀሪ ሂሳብ የሎትም!");
-            return;
-        }
-
-        sysState.balance -= sysState.activeStake;
-
-        const staticAvailableUserMasks = ["e***v", "k***p", "y***x", "w***m"];
-        const chosenMaskString = staticAvailableUserMasks[Math.floor(Math.random() * staticAvailableUserMasks.length)];
-
-        sysState.currentRoundTickets.push({
-            ticketReferenceId: Math.floor(100000 + Math.random() * 900000),
-            userMaskName: chosenMaskString,
-            selectedPicksArray: [...sysState.userSelections],
-            ticketWagerStake: sysState.activeStake
-        });
-
-        sysState.userSelections = [];
-        updateGameplayDisplayStageContent();
-        syncVisualGridSelectionPins();
-        syncGlobalStateDisplayMetrics();
-        rebuildActiveLiveTicketsComponentsFeed();
-    });
-
-    function rebuildActiveLiveTicketsComponentsFeed() {
-        if(sysState.currentRoundTickets.length === 0) {
-            liveRoundTicketsBucketEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.85rem;">ምንም የተያዘ ቲኬት የለም።</div>`;
-            return;
-        }
-
-        let compoundedLiveTicketsMarkup = '';
-        sysState.currentRoundTickets.forEach(ticketRecord => {
-            let innerBallsChipsMarkup = '';
-            ticketRecord.selectedPicksArray.forEach(numberBall => {
-                innerBallsChipsMarkup += `<div class="small-ball-chip">${numberBall}</div>`;
-            });
-
-            compoundedLiveTicketsMarkup += `
-                <div class="ticket-live-card">
-                    <div class="ticket-card-header">
-                        <span class="user-mask-tag">${ticketRecord.userMaskName}</span>
-                        <span class="ticket-status-badge">Waiting</span>
-                    </div>
-                    <div class="ticket-card-balls-row">${innerBallsChipsMarkup}</div>
-                    <div class="ticket-card-footer">
-                        <span>ID: #${ticketRecord.ticketReferenceId}</span>
-                        <span style="font-weight:bold; color:#fff;">ውርርድ: ${ticketRecord.ticketWagerStake.toFixed(2)} ETB</span>
-                    </div>
+            <div class="flex gap-2 items-center">
+                <div class="bg-[#17222c] px-3 py-1 rounded-full border border-[#253341] font-bold text-sm text-[#f1c40f]">
+                    <span id="user-balance-lbl">1000.00</span> <span class="text-[10px] text-gray-400 font-normal ml-0.5">ETB</span>
                 </div>
-            `;
-        });
+                <div class="bg-[#17222c] px-3 py-1 rounded-full border border-[#253341] text-xs font-medium text-gray-200 flex items-center gap-1">
+                    ID: <span id="round-id-lbl" class="font-bold">233987</span>
+                    <span class="text-[#2ecc71] font-bold">✔</span>
+                </div>
+            </div>
+        </div>
 
-        liveRoundTicketsBucketEl.innerHTML = compoundedLiveTicketsMarkup;
-    }
+        <div class="text-center py-1.5 bg-[#090c0f]">
+            <div class="text-[10px] uppercase tracking-widest text-[#00f3ff] font-bold opacity-80 mb-0.5">ቀጣይ እጣ (Next Draw)</div>
+            <div id="countdown-timer-clock" class="text-3xl font-bold text-[#00f3ff] tracking-wider neon-timer-text">00:60</div>
+        </div>
 
-    function startMasterSystemClockCountdownLoop() {
-        setInterval(() => {
-            if (!sysState.isRoundDrawingActive) {
-                if (sysState.countdownTimerSeconds > 0) {
-                    sysState.countdownTimerSeconds--;
-                    let formattedSecondsString = sysState.countdownTimerSeconds < 10 ? '0' + sysState.countdownTimerSeconds : sysState.countdownTimerSeconds;
-                    systemClockStripTextNode.innerHTML = `Next Draw: <span style="color:var(--glow-cyan); font-weight:bold;">00:${formattedSecondsString}</span>`;
-                } else {
-                    executeLiveRoundDrawingSequence();
-                }
-            }
-        }, 1000);
-    }
-
-    function executeLiveRoundDrawingSequence() {
-        if (sysState.currentRoundTickets.length === 0) {
-            generateRandomQuickPickSelectionArray();
-            sysState.balance -= sysState.activeStake;
-            sysState.currentRoundTickets.push({
-                ticketReferenceId: Math.floor(100000 + Math.random() * 900000),
-                userMaskName: "የእርስዎ ቲኬት",
-                selectedPicksArray: [...sysState.userSelections],
-                ticketWagerStake: sysState.activeStake
-            });
-            sysState.userSelections = [];
-            syncVisualGridSelectionPins();
-            rebuildActiveLiveTicketsComponentsFeed();
-        }
-
-        sysState.isRoundDrawingActive = true;
-        sysState.drawnNumbers = [];
-
-        // Hides UI interface panels completely during live execution frame drops
-        boardCanvasEl.style.display = 'none';
-        document.getElementById('stake-adjuster-panel').style.display = 'none';
-        document.getElementById('wager-trigger-panel').style.display = 'none';
-
-        stageDefaultPanelEl.style.display = 'none';
-        stageDrawingPanelEl.style.display = 'flex';
-        drawnBasketChipsRowEl.innerHTML = '';
-        focusDropSphereEl.textContent = '-';
-
-        let availableBallsDrawPoolList = Array.from({ length: 80 }, (_, i) => i + 1);
-        let extractedBallsCounter = 0;
-
-        let drawIntervalTimerInstance = setInterval(() => {
-            if (extractedBallsCounter < 20) {
-                let randomPoolIndexTarget = Math.floor(Math.random() * availableBallsDrawPoolList.length);
-                let selectedExtractedBallValue = availableBallsDrawPoolList.splice(randomPoolIndexTarget, 1)[0];
-                
-                sysState.drawnNumbers.push(selectedExtractedBallValue);
-                sysState.mockFrequencyStatsArray[selectedExtractedBallValue]++;
-
-                focusDropSphereEl.textContent = selectedExtractedBallValue;
-                extractedBallsCounter++;
-                drawCountLabelEl.textContent = `${extractedBallsCounter} / 20`;
-
-                const ballChipItemNode = document.createElement('div');
-                ballChipItemNode.className = 'small-ball-chip';
-                ballChipItemNode.textContent = selectedExtractedBallValue;
-                drawnBasketChipsRowEl.appendChild(ballChipItemNode);
-                
-                drawnBasketChipsRowEl.scrollLeft = drawnBasketChipsRowEl.scrollWidth;
-                updateLiveTicketCardsWithMatchesRealTime(selectedExtractedBallValue);
-            } else {
-                clearInterval(drawIntervalTimerInstance);
-                setTimeout(finalizeActiveRoundCalculationsAndLogs, 1500);
-            }
-        }, 550); 
-    }
-
-    function updateLiveTicketCardsWithMatchesRealTime(currentDroppedBallNumberValue) {
-        const structuralLiveTicketHtmlCards = liveRoundTicketsBucketEl.children;
-        sysState.currentRoundTickets.forEach((ticketObject, indexPosKey) => {
-            if(ticketObject.selectedPicksArray.includes(currentDroppedBallNumberValue)) {
-                const targetCardHtmlContainer = structuralLiveTicketHtmlCards[indexPosKey];
-                if(targetCardHtmlContainer) {
-                    const structuralBallsChipsHtmlList = targetCardHtmlContainer.querySelectorAll('.ticket-card-balls-row .small-ball-chip');
-                    ticketObject.selectedPicksArray.forEach((numberVal, ballIndex) => {
-                        if(numberVal === currentDroppedBallNumberValue && structuralBallsChipsHtmlList[ballIndex]) {
-                            structuralBallsChipsHtmlList[ballIndex].classList.add('matched-hit');
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    function finalizeActiveRoundCalculationsAndLogs() {
-        let totalRoundAggregatedWinnings = 0;
-        let builtHistorySubMarkupString = '';
-
-        sysState.currentRoundTickets.forEach(ticketItem => {
-            const intersectedHitsArray = ticketItem.selectedPicksArray.filter(drawnNumber => sysState.drawnNumbers.includes(drawnNumber));
-            const exactHitsCountTotal = intersectedHitsArray.length;
+        <div class="bg-[#151e26] border border-[#22303d] rounded-xl p-3.5 mx-3 my-2 min-h-[160px] flex flex-col justify-center relative overflow-hidden">
             
-            const roundPayoutOddsTableMap = GAME_PROFIT_RATIO_CHART[ticketItem.selectedPicksArray.length] || {};
-            const payoutRatioMultiplier = roundPayoutOddsTableMap[exactHitsCountTotal] || 0;
-            const singleTicketCalculatedWinPayout = ticketItem.ticketWagerStake * payoutRatioMultiplier;
+            <div id="radar-vector-bg" class="absolute inset-0 hidden items-center justify-center opacity-15 pointer-events-none">
+                <div class="w-56 h-56 border border-[#2ecc71] rounded-full animate-radar-slow"></div>
+                <div class="absolute w-40 h-40 border border-dashed border-[#2ecc71]/70 rounded-full animate-radar-slow-reverse"></div>
+                <div class="absolute w-24 h-24 border border-[#00f3ff]/40 rounded-full"></div>
+            </div>
 
-            totalRoundAggregatedWinnings += singleTicketCalculatedWinPayout;
-            sysState.balance += singleTicketCalculatedWinPayout;
+            <div id="stage-context-selection" class="flex flex-col h-full justify-between w-full">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white tracking-wide">10 ቁጥሮችን ይምረጡ</div>
+                    <div class="text-[#2ecc71] font-bold text-sm mt-0.5">ከ 1 እስከ 80 (Pick 1 to 10 Numbers)</div>
+                </div>
+            </div>
 
-            let staticHistoryChipsRowMarkup = '';
-            ticketItem.selectedPicksArray.forEach(pickNum => {
-                let hitClassFlag = sysState.drawnNumbers.includes(pickNum) ? 'matched-hit' : '';
-                staticHistoryChipsRowMarkup += `<div class="small-ball-chip ${hitClassFlag}">${pickNum}</div>`;
-            });
+            <div id="stage-context-odds" class="hidden flex-col justify-between w-full h-full">
+                <div class="text-base font-bold text-white flex justify-between">
+                    <span>ሊገኝ የሚችል ትርፍ (Possible Win):</span>
+                    <span id="potential-win-amount" class="text-[#2ecc71] font-black">0.00 ETB</span>
+                </div>
+                <div class="flex flex-col gap-1 my-2 text-xs">
+                    <div class="flex items-center gap-2"><span class="text-gray-400 w-12">ተዛማጅ:</span> <div id="odds-row-matches" class="flex gap-2 font-bold text-white"></div></div>
+                    <div class="flex items-center gap-2"><span class="text-gray-400 w-12">ክፍያ:</span> <div id="odds-row-payouts" class="flex gap-2 font-bold text-[#2ecc71]"></div></div>
+                </div>
+                <div id="selected-mini-chips-strip" class="flex gap-1.5 overflow-x-auto pt-1 no-scrollbar"></div>
+            </div>
 
-            builtHistorySubMarkupString += `
-                <div class="ticket-live-card" style="margin-bottom:6px; background:#1c2833; border-color:#2c3e50;">
-                    <div class="ticket-card-header">
-                        <span style="font-weight:bold; color:var(--glow-cyan);">티ኬት #${ticketItem.ticketReferenceId}</span>
-                        <span style="font-weight:bold; color:${singleTicketCalculatedWinPayout > 0 ? 'var(--fast-green)' : '#e74c3c'}">
-                            ${singleTicketCalculatedWinPayout > 0 ? '+' + singleTicketCalculatedWinPayout.toFixed(2) + ' ETB' : 'አልደረሰም'}
-                        </span>
+            <div id="stage-context-drawing" class="hidden flex-col justify-between w-full relative z-10">
+                <div class="flex justify-between items-center text-xs text-gray-400 font-bold px-1">
+                    <span>ቀጥታ እጣ ማውጣት (Live Drawing...)</span>
+                    <span id="live-drawn-counter-lbl" class="font-mono text-[#00f3ff]">0 / 20</span>
+                </div>
+                
+                <div class="my-2 flex justify-center">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-b from-[#2a3e54] to-[#121b26] border-2 border-[#3b5575] flex items-center justify-center shadow-xl shadow-black/80">
+                        <span id="live-ball-focus-bubble" class="text-2xl font-black font-mono text-white">-</span>
                     </div>
-                    <div class="ticket-card-balls-row" style="margin:5px 0;">${staticHistoryChipsRowMarkup}</div>
                 </div>
-            `;
-        });
 
-        sysState.archivedGamesHistory.unshift({
-            gameRoundId: sysState.gameRoundId,
-            drawnNumbersArray: [...sysState.drawnNumbers],
-            innerTicketsDetailedLogMarkup: builtHistorySubMarkupString
-        });
-
-        rebuildHistoryAndPastResultsViewPanels();
-        rebuildAnalyticalStatsBarsPanel();
-
-        sysState.currentRoundTickets = [];
-        sysState.isRoundDrawingActive = false;
-        sysState.countdownTimerSeconds = 60;
-        sysState.gameRoundId++;
-
-        stageDrawingPanelEl.style.display = 'none';
-        stageDefaultPanelEl.style.display = 'flex';
-        boardCanvasEl.style.display = 'grid';
-        document.getElementById('stake-adjuster-panel').style.display = 'grid';
-        document.getElementById('wager-trigger-panel').style.display = 'block';
-
-        updateGameplayDisplayStageContent();
-        syncVisualGridSelectionPins();
-        syncGlobalStateDisplayMetrics();
-        rebuildActiveLiveTicketsComponentsFeed();
-    }
-
-    function rebuildHistoryAndPastResultsViewPanels() {
-        const historyContainerEl = document.getElementById('history-panel-wagers-feed');
-        const resultsContainerEl = document.getElementById('results-panel-archive-feed');
-
-        let compiledHistoryHtmlRows = '';
-        let compiledResultsHtmlRows = '';
-
-        sysState.archivedGamesHistory.forEach(historyLogRecord => {
-            compiledHistoryHtmlRows += `
-                <div style="background:#111920; padding:8px; border-radius:4px; margin-bottom:10px; border-left: 4px solid var(--fast-green)">
-                    <div style="font-size:0.9rem; font-weight:bold; color:#fff; margin-bottom:6px;">ዙር መለያ: #${historyLogRecord.gameRoundId}</div>
-                    ${historyLogRecord.innerTicketsDetailedLogMarkup}
+                <div class="w-full bg-[#0e1318]/90 border border-gray-800/60 rounded-xl p-2.5 shadow-inner flex flex-col gap-1.5">
+                    <div id="live-row-line-1" class="grid grid-cols-10 gap-1.5 justify-items-center"></div>
+                    <div id="live-row-line-2" class="grid grid-cols-10 gap-1.5 justify-items-center"></div>
                 </div>
-            `;
+            </div>
 
-            let twentyBallsRowMarkup = '';
-            historyLogRecord.drawnNumbersArray.forEach(drawnNumVal => {
-                twentyBallsRowMarkup += `<div class="small-ball-chip" style="background:radial-gradient(circle, #2c3e50, #0f171e); border-color:#34495e;">${drawnNumVal}</div>`;
-            });
+        </div>
 
-            compiledResultsHtmlRows += `
-                <div class="ticket-live-card">
-                    <div class="ticket-card-header">
-                        <span style="font-weight:bold; color:var(--glow-cyan);">ID: #${historyLogRecord.gameRoundId}</span>
-                    </div>
-                    <div class="ticket-card-balls-row" style="margin-top:4px;">${twentyBallsRowMarkup}</div>
+        <div class="px-3 py-1 flex-grow flex items-center justify-center bg-[#0a0f15]">
+            <div id="main-keno-grid-canvas" class="grid grid-cols-10 gap-1.5 w-full max-w-sm">
                 </div>
-            `;
-        });
+        </div>
 
-        if(compiledHistoryHtmlRows !== '') historyContainerEl.innerHTML = compiledHistoryHtmlRows;
-        if(compiledResultsHtmlRows !== '') resultsContainerEl.innerHTML = compiledResultsHtmlRows;
-    }
-
-    function rebuildAnalyticalStatsBarsPanel() {
-        const statsBarsContainerEl = document.getElementById('stats-panel-bars-container');
-        let compoundedBarsMarkup = '';
-
-        const occurrencesCountValuesArray = Object.values(sysState.mockFrequencyStatsArray);
-        const maxSingleOccurrenceValueTrack = Math.max(...occurrencesCountValuesArray, 1);
-
-        for (let i = 1; i <= 10; i++) {
-            let currentNumberCountValue = sysState.mockFrequencyStatsArray[i] || 0;
-            let barCalculatedPercentageRatio = (currentNumberCountValue / maxSingleOccurrenceValueTrack) * 100;
-
-            compoundedBarsMarkup += `
-                <div class="stat-bar-row">
-                    <span class="stat-num-lbl">${i}</span>
-                    <div class="stat-progress-track">
-                        <div class="stat-fill-progress" style="width: ${barCalculatedPercentageRatio}%"></div>
-                    </div>
-                    <span class="stat-count-val">${currentNumberCountValue}</span>
+        <div class="flex flex-col gap-2 px-3 pt-2 bg-[#0d141c]">
+            <div class="grid grid-cols-5 gap-2 h-11">
+                <div class="col-span-2 bg-[#1c2833] border border-[#2c3e50] rounded-lg flex items-center justify-between px-3 text-white font-bold text-sm">
+                    <span id="ctrl-stake-decrement" class="cursor-pointer text-lg p-1 select-none hover:text-[#2ecc71] transition-colors">−</span>
+                    <span id="ctrl-stake-display-value">10.00</span>
+                    <span id="ctrl-stake-increment" class="cursor-pointer text-lg p-1 select-none hover:text-[#2ecc71] transition-colors">+</span>
                 </div>
-            `;
+                <button id="ctrl-action-double" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white font-bold text-sm hover:border-[#2ecc71] transition-all">X2</button>
+                <button id="ctrl-action-quick" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white font-bold text-sm hover:border-[#2ecc71] transition-all">ማክስ</button>
+                <button id="ctrl-action-clear" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white text-base hover:border-[#e74c3c] transition-all">⚙</button>
+            </div>
+
+            <div class="w-full">
+                <button id="ctrl-trigger-wager-submit" class="w-full bg-[#1e8449] border border-[#27ae60] text-white rounded-lg py-2.5 font-bold text-xl shadow-md tracking-wide hover:bg-[#27ae60] transition-colors cursor-pointer">
+                    ይጫወቱ (PLACE BET)
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 text-center border-b border-gray-800 bg-[#0d141a] text-xs font-bold text-gray-400 mt-2">
+            <button id="tab-btn-game" class="py-3 text-[#2ecc71] border-b-2 border-[#2ecc71] bg-[#111a24]/40" onclick="switchActiveViewPanel('view-game-panel', this)">🎰 ጨዋታ</button>
+            <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-history-panel', this)">⏳ ታሪክ</button>
+            <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-results-panel', this)">✔ ውጤቶች</button>
+            <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-stats-panel', this)">📊 ስታቲስቲክስ</button>
+        </div>
+
+        <div class="px-3 py-2 flex-grow overflow-y-auto max-h-[175px] min-h-[140px] bg-[#0e1318] no-scrollbar">
+            
+            <div id="view-game-panel" class="app-view-sub-pane block">
+                <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የእኔ ቲኬቶች (My Round Wagers)</div>
+                <div id="live-tickets-display-stack" class="flex flex-col gap-2"></div>
+            </div>
+
+            <div id="view-history-panel" class="app-view-sub-pane hidden">
+                <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የተጫወቱ ቲኬቶች ታሪክ (My Match Ledger)</div>
+                <div id="history-tickets-display-stack" class="text-center text-xs py-6 text-gray-500 font-medium">ያለፉ ቲኬቶች ታሪክ እዚህ ይዘረዘራል።</div>
+            </div>
+
+            <div id="view-results-panel" class="app-view-sub-pane hidden">
+                <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የመጨረሻዎቹ 100 ዙር ውጤቶች (Platform Results Archive)</div>
+                <div id="archive-results-display-stack" class="flex flex-col gap-2"></div>
+            </div>
+
+            <div id="view-stats-panel" class="app-view-sub-pane hidden">
+                <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የቁጥሮች መውጣት ድግግሞሽ (100 Rounds Analytical Frequency)</div>
+                <div id="stats-frequency-graph-container" class="flex flex-col gap-1.5 py-1"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // System Casino Pay Rates Array Definition Standards Config
+        const ODDS_MULTIPLIER_MATRIX = {
+            1: { 1: 3.5 }, 2: { 2: 15 }, 3: { 2: 2, 3: 50 },
+            4: { 2: 1, 3: 5, 4: 150 }, 5: { 3: 3, 4: 15, 5: 500 },
+            6: { 3: 2, 4: 10, 5: 50, 6: 1500 }, 7: { 4: 5, 5: 25, 6: 150, 7: 3000 },
+            8: { 4: 2, 5: 15, 6: 75, 7: 500, 8: 10000 },
+            9: { 5: 10, 6: 50, 7: 250, 8: 1500, 9: 25000 },
+            10: { 5: 5, 6: 25, 7: 125, 8: 1000, 9: 5000, 10: 100000 }
+        };
+
+        // Reactive Application State Engine Storage
+        let appState = {
+            walletBalance: 1000.00,
+            activeWagerStake: 10.00,
+            selectedGridNumbers: [],
+            activeRoundRegisteredTickets: [],
+            archivedRoundsHistoryLog: [],
+            extractedDrawNumbersArray: [],
+            isLiveRoundDrawingActive: false,
+            countdownRemainingSeconds: 60,
+            currentSystemRoundId: 233987,
+            mockGlobalFrequencyMetrics: {}
+        };
+
+        // Cache Dom Element Lookups Nodes Elements
+        const mainGridCanvasNode = document.getElementById('main-keno-grid-canvas');
+        const stageSelectionPane = document.getElementById('stage-context-selection');
+        const stageOddsPane = document.getElementById('stage-context-odds');
+        const stageDrawingPane = document.getElementById('stage-context-drawing');
+        const radarBackgroundGraphic = document.getElementById('radar-vector-bg');
+        const countdownTimerClockNode = document.getElementById('countdown-timer-clock');
+        const liveBallFocusBubbleNode = document.getElementById('live-ball-focus-bubble');
+        const liveDrawnCounterLblNode = document.getElementById('live-drawn-counter-lbl');
+        const liveRowLine1Node = document.getElementById('live-row-line-1');
+        const liveRowLine2Node = document.getElementById('live-row-line-2');
+
+        function switchActiveViewPanel(targetPanelElementId, triggerNavigationTabButton) {
+            document.querySelectorAll('.app-view-sub-pane').forEach(el => el.classList.replace('block', 'hidden'));
+            document.querySelectorAll('div.grid-cols-4 button').forEach(el => el.classList.remove('text-[#2ecc71]', 'border-b-2', 'border-[#2ecc71]', 'bg-[#111a24]/40'));
+
+            document.getElementById(targetPanelElementId).classList.replace('hidden', 'block');
+            triggerNavigationTabButton.classList.add('text-[#2ecc71]', 'border-b-2', 'border-[#2ecc71]', 'bg-[#111a24]/40');
         }
-        statsBarsContainerEl.innerHTML = compoundedBarsMarkup;
-    }
 
-    function generateRandomQuickPickSelectionArray() {
-        sysState.userSelections = [];
-        while (sysState.userSelections.length < 10) {
-            let fullyRandomTargetNumber = Math.floor(Math.random() * 80) + 1;
-            if (!sysState.userSelections.includes(fullyRandomTargetNumber)) {
-                sysState.userSelections.push(fullyRandomTargetNumber);
+        function initializeKenoApplicationWorkflow() {
+            // Populate mock stat counts baseline tracking models array configurations
+            for(let i = 1; i <= 80; i++) {
+                appState.mockGlobalFrequencyMetrics[i] = Math.floor(Math.random() * 25) + 10;
+            }
+            render80NumbersGridBoard();
+            buildTwoLineEmptyPlaceholdersGrid();
+            refreshGlobalDisplayIndicators();
+            rebuildPerformanceFrequencyBarsGraph();
+            runCountdownClockTickerLoop();
+        }
+
+        function render80NumbersGridBoard() {
+            mainGridCanvasNode.innerHTML = '';
+            for(let i = 1; i <= 80; i++) {
+                const numberButtonNode = document.createElement('button');
+                numberButtonNode.className = "relative aspect-square rounded bg-[#16222f] text-gray-400 font-bold text-sm flex items-center justify-center transition-all duration-150 hover:bg-[#1c2c3d] cursor-pointer";
+                numberButtonNode.innerText = i;
+                numberButtonNode.addEventListener('click', () => handleGridSelectionPress(i, numberButtonNode));
+                mainGridCanvasNode.appendChild(numberButtonNode);
             }
         }
-    }
 
-    function syncGlobalStateDisplayMetrics() {
-        document.getElementById('user-balance-view').textContent = sysState.balance.toFixed(2);
-        document.getElementById('round-id-view').textContent = sysState.gameRoundId;
-        document.getElementById('stake-value-lbl').textContent = sysState.activeStake.toFixed(2);
-    }
+        function buildTwoLineEmptyPlaceholdersGrid() {
+            liveRowLine1Node.innerHTML = '';
+            liveRowLine2Node.innerHTML = '';
+            for(let i = 0; i < 20; i++) {
+                const nodeCircle = document.createElement('div');
+                nodeCircle.className = "w-7 h-7 rounded-full border border-gray-800/80 bg-[#182535]/30 transition-all duration-300 flex items-center justify-center text-xs font-mono font-bold text-transparent";
+                nodeCircle.innerText = "-";
+                if(i < 10) liveRowLine1Node.appendChild(nodeCircle);
+                else liveRowLine2Node.appendChild(nodeCircle);
+            }
+        }
 
-    document.getElementById('action-quick-pick').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive) return;
-        generateRandomQuickPickSelectionArray();
-        updateGameplayDisplayStageContent();
-        syncVisualGridSelectionPins();
-    });
+        function handleGridSelectionPress(numberValue, elementNode) {
+            if(appState.isLiveRoundDrawingActive) return;
 
-    document.getElementById('action-clear-board').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive) return;
-        sysState.userSelections = [];
-        updateGameplayDisplayStageContent();
-        syncVisualGridSelectionPins();
-    });
+            const trackingIndexValue = appState.selectedGridNumbers.indexOf(numberValue);
+            if(trackingIndexValue > -1) {
+                appState.selectedGridNumbers.splice(trackingIndexValue, 1);
+            } else {
+                if(appState.selectedGridNumbers.length >= 10) return;
+                appState.selectedGridNumbers.push(numberValue);
+            }
 
-    document.getElementById('stake-plus').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive) return;
-        sysState.activeStake += 5;
-        syncGlobalStateDisplayMetrics();
-        if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
-    });
+            syncVisualSelectedStatesOnGridCanvas();
+            updateDisplayStageMessagingState();
+        }
 
-    document.getElementById('stake-minus').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive || sysState.activeStake <= 5) return;
-        sysState.activeStake -= 5;
-        syncGlobalStateDisplayMetrics();
-        if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
-    });
+        function syncVisualSelectedStatesOnGridCanvas() {
+            const childrenGridButtons = mainGridCanvasNode.children;
+            for(let i = 1; i <= 80; i++) {
+                const targetBtnNode = childrenGridButtons[i-1];
+                // Pop off native decoration indicators tag markers clean states
+                targetBtnNode.className = "relative aspect-square rounded bg-[#16222f] text-gray-400 font-bold text-sm flex items-center justify-center transition-all duration-150 hover:bg-[#1c2c3d] cursor-pointer";
+                const absoluteIndicatorDot = targetBtnNode.querySelector('span');
+                if(absoluteIndicatorDot) absoluteIndicatorDot.remove();
 
-    document.getElementById('action-double-multiplier').addEventListener('click', () => {
-        if (sysState.isRoundDrawingActive) return;
-        sysState.activeStake *= 2;
-        syncGlobalStateDisplayMetrics();
-        if (sysState.userSelections.length > 0) updateGameplayDisplayStageContent();
-    });
+                if(appState.selectedGridNumbers.includes(i)) {
+                    targetBtnNode.classList.replace('bg-[#16222f]', 'bg-[#1e3a8a]');
+                    targetBtnNode.classList.replace('text-gray-400', 'text-[#38bdf8]');
+                    targetBtnNode.classList.add('border', 'border-[#2563eb]');
+                    targetBtnNode.innerHTML += '<span class="absolute top-0.5 right-0.5 w-1 h-1 bg-[#00f2ff] rounded-full"></span>';
+                }
+            }
+        }
 
-    initializeKenoSystem();
-    rebuildActiveLiveTicketsComponentsFeed();
-</script>
+        function updateDisplayStageMessagingState() {
+            const count = appState.selectedGridNumbers.length;
+            if(count === 0) {
+                stageSelectionPane.classList.replace('hidden', 'flex');
+                stageOddsPane.classList.replace('flex', 'hidden');
+                return;
+            }
+
+            stageSelectionPane.classList.replace('flex', 'hidden');
+            stageOddsPane.classList.replace('hidden', 'flex');
+
+            const specificOddsMap = ODDS_MULTIPLIER_MATRIX[count] || {};
+            const hitsKeysOrdered = Object.keys(specificOddsMap).map(Number).sort((a,b)=>a-b);
+            const maximumPayoutMultiplier = hitsKeysOrdered.length > 0 ? Math.max(...hitsKeysOrdered) : 0;
+            const calculatedMaxWinningsPayout = appState.activeWagerStake * (specificOddsMap[maximumPayoutMultiplier] || 0);
+
+            document.getElementById('potential-win-amount').innerText = `${calculatedMaxWinningsPayout.toFixed(2)} ETB`;
+
+            let matchesRowHtmlString = '';
+            let payoutsRowHtmlString = '';
+            hitsKeysOrdered.forEach(key => {
+                matchesRowHtmlString += `<span class="bg-[#202b36] px-1.5 py-0.5 rounded text-white min-w-[20px] text-center">${key}</span>`;
+                payoutsRowHtmlString += `<span class="min-w-[20px] text-center">x${specificOddsMap[key]}</span>`;
+            });
+
+            document.getElementById('odds-row-matches').innerHTML = matchesRowHtmlString;
+            document.getElementById('odds-row-payouts').innerHTML = payoutsRowHtmlString;
+
+            let miniChipsRowHtmlString = '';
+            appState.selectedGridNumbers.forEach(num => {
+                miniChipsRowHtmlString += `<div class="w-7 h-7 bg-[#202b36] border border-[#2e3d4d] text-white rounded-md flex-shrink-0 flex items-center justify-center font-bold text-xs">${num}</div>`;
+            });
+            document.getElementById('selected-mini-chips-strip').innerHTML = miniChipsRowHtmlString;
+        }
+
+        function refreshGlobalDisplayIndicators() {
+            document.getElementById('user-balance-lbl').innerText = appState.walletBalance.toFixed(2);
+            document.getElementById('round-id-lbl').innerText = appState.currentSystemRoundId;
+            document.getElementById('ctrl-stake-display-value').innerText = appState.activeWagerStake.toFixed(2);
+        }
+
+        // Action Deck Interactive Form Triggers Execution Blocks
+        document.getElementById('ctrl-stake-increment').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive) return;
+            appState.activeWagerStake += 5.00;
+            refreshGlobalDisplayIndicators();
+            updateDisplayStageMessagingState();
+        });
+
+        document.getElementById('ctrl-stake-decrement').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive || appState.activeWagerStake <= 5.00) return;
+            appState.activeWagerStake -= 5.00;
+            refreshGlobalDisplayIndicators();
+            updateDisplayStageMessagingState();
+        });
+
+        document.getElementById('ctrl-action-double').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive) return;
+            appState.activeWagerStake *= 2;
+            refreshGlobalDisplayIndicators();
+            updateDisplayStageMessagingState();
+        });
+
+        document.getElementById('ctrl-action-clear').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive) return;
+            appState.selectedGridNumbers = [];
+            syncVisualSelectedStatesOnGridCanvas();
+            updateDisplayStageMessagingState();
+        });
+
+        document.getElementById('ctrl-action-quick').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive) return;
+            triggerRandomQuickPickGeneration();
+        });
+
+        function triggerRandomQuickPickGeneration() {
+            appState.selectedGridNumbers = [];
+            while(appState.selectedGridNumbers.length < 10) {
+                let randomVal = Math.floor(Math.random() * 80) + 1;
+                if(!appState.selectedGridNumbers.includes(randomVal)) {
+                    appState.selectedGridNumbers.push(randomVal);
+                }
+            }
+            syncVisualSelectedStatesOnGridCanvas();
+            updateDisplayStageMessagingState();
+        }
+
+        // Submit Ticket Registry Logic Processing Action Engine
+        document.getElementById('ctrl-trigger-wager-submit').addEventListener('click', () => {
+            if(appState.isLiveRoundDrawingActive) return;
+
+            if(appState.selectedGridNumbers.length === 0) {
+                triggerRandomQuickPickGeneration();
+            }
+
+            if(appState.walletBalance < appState.activeWagerStake) {
+                alert("ይቅርታ፣ በቂ ቀሪ ሂሳብ የሎትም! (Insufficient Balance)");
+                return;
+            }
+
+            appState.walletBalance -= appState.activeWagerStake;
+
+            const simulatedPoolMaskTags = ["w***k", "a***m", "t***y", "b***r"];
+            const designatedMask = simulatedPoolMaskTags[Math.floor(Math.random() * simulatedPoolMaskTags.length)];
+
+            appState.activeRoundRegisteredTickets.push({
+                ticketId: Math.floor(100000 + Math.random() * 900000),
+                playerMask: designatedMask,
+                chosenSelectionsArray: [...appState.selectedGridNumbers],
+                wagerAmountPlaced: appState.activeWagerStake
+            });
+
+            appState.selectedGridNumbers = [];
+            syncVisualSelectedStatesOnGridCanvas();
+            updateDisplayStageMessagingState();
+            refreshGlobalDisplayIndicators();
+            rebuildActiveLiveTicketsFeed();
+        });
+
+        function rebuildActiveLiveTicketsFeed() {
+            const liveStackContainer = document.getElementById('live-tickets-display-stack');
+            if(appState.activeRoundRegisteredTickets.length === 0) {
+                liveStackContainer.innerHTML = `<div class="text-center text-xs py-4 text-gray-500 font-medium">ምንም የተያዘ ቲኬት የለም።</div>`;
+                return;
+            }
+
+            let combinedMarkup = '';
+            appState.activeRoundRegisteredTickets.forEach(ticket => {
+                let numbersListChips = '';
+                ticket.chosenSelectionsArray.forEach(val => {
+                    numbersListChips += `<div class="w-6 h-6 rounded-full bg-gradient-to-b from-[#34495e] to-[#1a252f] border border-[#465c70] flex items-center justify-center font-bold text-[11px] text-white">${val}</div>`;
+                });
+
+                combinedMarkup += `
+                    <div class="bg-[#161f26] border border-[#23303c] rounded-lg p-2.5 flex flex-col gap-1.5 transition-all">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-[#2ecc71] font-bold">${ticket.playerMask}</span>
+                            <span class="bg-yellow-500/10 text-yellow-500 text-[10px] px-1.5 py-0.5 rounded font-bold animate-pulse">Waiting</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1">${numbersListChips}</div>
+                        <div class="flex justify-between items-center text-[10px] text-gray-500 border-t border-gray-800/80 pt-1.5">
+                            <span>ID: #${ticket.ticketId}</span>
+                            <span class="text-white font-bold">ውርርድ: ${ticket.wagerAmountPlaced.toFixed(2)} ETB</span>
+                        </div>
+                    </div>
+                `;
+            });
+            liveStackContainer.innerHTML = combinedMarkup;
+        }
+
+        // Clock Ticker Runtime Countdown Controls Framework Loop Loop
+        function runCountdownClockTickerLoop() {
+            setInterval(() => {
+                if(!appState.isLiveRoundDrawingActive) {
+                    if(appState.countdownRemainingSeconds > 0) {
+                        appState.countdownRemainingSeconds--;
+                        let paddedSecs = appState.countdownRemainingSeconds < 10 ? '0' + appState.countdownRemainingSeconds : appState.countdownRemainingSeconds;
+                        countdownTimerClockNode.innerHTML = `Next Draw: <span class="text-[#00f3ff] font-bold">00:${paddedSecs}</span>`;
+                    } else {
+                        triggerLiveDrawingCycleSequence();
+                    }
+                }
+            }, 1000);
+        }
+
+        // Live Extraction Sequence Simulation Animation Suite
+        function triggerLiveDrawingCycleSequence() {
+            // Force generate placeholder ticket entry to preserve UI look if empty on timeline finish
+            if(appState.activeRoundRegisteredTickets.length === 0) {
+                triggerRandomQuickPickGeneration();
+                appState.walletBalance -= appState.activeWagerStake;
+                appState.activeRoundRegisteredTickets.push({
+                    ticketId: Math.floor(100000 + Math.random() * 900000),
+                    playerMask: "የእርስዎ ቲኬት",
+                    chosenSelectionsArray: [...appState.selectedGridNumbers],
+                    wagerAmountPlaced: appState.activeWagerStake
+                });
+                appState.selectedGridNumbers = [];
+                syncVisualSelectedStatesOnGridCanvas();
+                updateDisplayStageMessagingState();
+                refreshGlobalDisplayIndicators();
+                rebuildActiveLiveTicketsFeed();
+            }
+
+            appState.isLiveRoundDrawingActive = true;
+            appState.extractedDrawNumbersArray = [];
+
+            // Switch display visibility elements down inside stage blocks
+            stageSelectionPane.classList.replace('flex', 'hidden');
+            stageOddsPane.classList.replace('flex', 'hidden');
+            stageDrawingPane.classList.replace('hidden', 'flex');
+            radarBackgroundGraphic.classList.replace('hidden', 'flex');
+
+            buildTwoLineEmptyPlaceholdersGrid();
+            liveBallFocusBubbleNode.innerText = "-";
+            liveDrawnCounterLblNode.innerText = "0 / 20";
+
+            let coreBallsPoolList = Array.from({length: 80}, (_, idx) => idx + 1);
+            let dropCounter = 0;
+
+            // Slow down dropping rendering cycles matching requested slow performance settings parameters
+            let dropIntervalTimerRef = setInterval(() => {
+                if(dropCounter < 20) {
+                    let randIndex = Math.floor(Math.random() * coreBallsPoolList.length);
+                    let droppedBallValue = coreBallsPoolList.splice(randIndex, 1)[0];
+
+                    appState.extractedDrawNumbersArray.push(droppedBallValue);
+                    appState.mockGlobalFrequencyMetrics[droppedBallValue]++;
+
+                    liveBallFocusBubbleNode.innerText = droppedBallValue;
+                    dropCounter++;
+                    liveDrawnCounterLblNode.innerText = `${dropCounter} / 20`;
+
+                    updateTwoLineLiveGridUIProgress(dropCounter - 1, droppedBallValue);
+                    evaluateIntermittentGridBoardHighlights(droppedBallValue);
+                    dropCounter === 20 ? clearInterval(dropIntervalTimerRef) || setTimeout(executeFinalWinningsAuditingCycle, 1600) : null;
+                }
+            }, 750); // Set to 750ms for smooth live tracking pacing metrics loops
+        }
+
+        function updateTwoLineLiveGridUIProgress(indexPlacementKey, numericalValue) {
+            const targetRowContainerNode = indexPlacementKey < 10 ? liveRowLine1Node : liveRowLine2Node;
+            const absoluteTargetIndex = indexPlacementKey < 10 ? indexPlacementKey : indexPlacementKey - 10;
+            const targetCellBallNode = targetRowContainerNode.children[absoluteTargetIndex];
+
+            if(targetCellBallNode) {
+                targetCellBallNode.className = "w-7 h-7 rounded-full border bg-gradient-to-b from-[#1c3047] to-[#0f1a26] border-[#2563eb] text-[#38bdf8] font-black flex items-center justify-center text-xs font-mono shadow-md scale-110 transition-transform duration-200";
+                targetCellBallNode.innerText = numericalValue;
+                setTimeout(() => targetCellBallNode.classList.remove('scale-110'), 200);
+            }
+        }
+
+        function evaluateIntermittentGridBoardHighlights(newBallValue) {
+            // Evaluates real-time background matches inside user selection layers
+            const activeTicketsHtmlCollection = document.getElementById('live-tickets-display-stack').children;
+            appState.activeRoundRegisteredTickets.forEach((ticket, ticketIdx) => {
+                if(ticket.chosenSelectionsArray.includes(newBallValue)) {
+                    const structuralHtmlCard = activeTicketsHtmlCollection[ticketIdx];
+                    if(structuralHtmlCard) {
+                        const chipChipsCollectionNodes = structuralHtmlCard.querySelectorAll('div.flex-wrap div');
+                        ticket.chosenSelectionsArray.forEach((numberObj, numIdx) => {
+                            if(numberObj === newBallValue && chipChipsCollectionNodes[numIdx]) {
+                                chipChipsCollectionNodes[numIdx].className = "w-6 h-6 rounded-full bg-gradient-to-b from-[#2ecc71] to-[#27ae60] border border-[#2ecc71] flex items-center justify-center font-black text-[11px] text-black scale-105 transition-all";
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        function executeFinalWinningsAuditingCycle() {
+            let runningTotalWinAccrual = 0;
+            let ticketSublogsCompiledHtmlMarkup = '';
+
+            appState.activeRoundRegisteredTickets.forEach(ticket => {
+                const hitsArrayMatches = ticket.chosenSelectionsArray.filter(v => appState.extractedDrawNumbersArray.includes(v));
+                const totalExactHitsCount = hitsArrayMatches.length;
+
+                const associatedOddsTierMap = ODDS_MULTIPLIER_MATRIX[ticket.chosenSelectionsArray.length] || {};
+                const appliedPayoutRatioMultiplier = associatedOddsTierMap[totalExactHitsCount] || 0;
+                const evaluatedTicketNetWinPayout = ticket.wagerAmountPlaced * appliedPayoutRatioMultiplier;
+
+                runningTotalWinAccrual += evaluatedTicketNetWinPayout;
+                appState.walletBalance += evaluatedTicketNetWinPayout;
+
+                let logChipsRowHtml = '';
+                ticket.chosenSelectionsArray.forEach(v => {
+                    let wasHit = appState.extractedDrawNumbersArray.includes(v);
+                    logChipsRowHtml += `<div class="w-5 h-5 rounded-full ${wasHit ? 'bg-[#2ecc71] text-black font-black' : 'bg-gray-800 text-gray-400'} flex items-center justify-center text-[10px] font-bold">${v}</div>`;
+                });
+
+                ticketSublogsCompiledHtmlMarkup += `
+                    <div class="bg-[#1c2833]/80 p-2 rounded border border-gray-800 flex flex-col gap-1 text-[11px]">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 font-medium">ቲኬት #${ticket.ticketId}</span>
+                            <span class="font-bold ${evaluatedTicketNetWinPayout > 0 ? 'text-[#2ecc71]' : 'text-red-400'}">
+                                ${evaluatedTicketNetWinPayout > 0 ? '+' + evaluatedTicketNetWinPayout.toFixed(2) + ' ETB' : 'አልደረሰም'}
+                            </span>
+                        </div>
+                        <div class="flex gap-1 flex-wrap">${logChipsRowHtml}</div>
+                    </div>
+                `;
+            });
+
+            appState.archivedRoundsHistoryLog.unshift({
+                roundId: appState.currentSystemRoundId,
+                pulledDrawList: [...appState.extractedDrawNumbersArray],
+                innerCompiledWagerLogsHtml: ticketSublogsCompiledHtmlMarkup
+            });
+
+            synchronizeArchivedFeedsAndLogsViews();
+            rebuildPerformanceFrequencyBarsGraph();
+
+            // Refresh configuration settings models clean slate states
+            appState.activeRoundRegisteredTickets = [];
+            appState.isLiveRoundDrawingActive = false;
+            appState.countdownRemainingSeconds = 60;
+            appState.currentSystemRoundId++;
+
+            stageDrawingPane.classList.replace('flex', 'hidden');
+            radarBackgroundGraphic.classList.replace('flex', 'hidden');
+            stageSelectionPane.classList.replace('hidden', 'flex');
+
+            updateDisplayStageMessagingState();
+            syncVisualSelectedStatesOnGridCanvas();
+            refreshGlobalDisplayIndicators();
+            rebuildActiveLiveTicketsFeed();
+        }
+
+        function synchronizeArchivedFeedsAndLogsViews() {
+            const ledgerHistoryContainer = document.getElementById('history-tickets-display-stack');
+            const archiveResultsContainer = document.getElementById('archive-results-display-stack');
+
+            let historyCombinedHtmlString = '';
+            let resultsCombinedHtmlString = '';
+
+            appState.archivedRoundsHistoryLog.forEach(log => {
+                historyCombinedHtmlString += `
+                    <div class="bg-[#111920] p-2 rounded border-l-4 border-[#2ecc71] flex flex-col gap-1.5 shadow mb-2">
+                        <div class="text-xs text-white font-bold">ዙር መለያ: #${log.roundId}</div>
+                        ${log.innerCompiledWagerLogsHtml}
+                    </div>
+                `;
+
+                let twentyBallsHtml = '';
+                log.pulledDrawList.forEach(ball => {
+                    twentyBallsHtml += `<div class="w-6 h-6 rounded-full bg-gradient-to-b from-[#2c3e50] to-[#0f171e] border border-gray-700 flex items-center justify-center font-bold text-[10px] text-white font-mono">${ball}</div>`;
+                });
+
+                resultsCombinedHtmlString += `
+                    <div class="bg-[#161f26] border border-[#23303c] rounded-lg p-2.5 flex flex-col gap-1">
+                        <div class="text-xs font-bold text-[#00f3ff]">ዙር ID: #${log.roundId}</div>
+                        <div class="flex flex-wrap gap-1">${twentyBallsHtml}</div>
+                    </div>
+                `;
+            });
+
+            if(historyCombinedHtmlString !== '') ledgerHistoryContainer.innerHTML = historyCombinedHtmlString;
+            if(resultsCombinedHtmlString !== '') archiveResultsContainer.innerHTML = resultsCombinedHtmlString;
+        }
+
+        function rebuildPerformanceFrequencyBarsGraph() {
+            const graphContainer = document.getElementById('stats-frequency-graph-container');
+            let builtRowsHtml = '';
+
+            const occurrencesArray = Object.values(appState.mockGlobalFrequencyMetrics);
+            const peakOccurrenceMetricVal = Math.max(...occurrencesArray, 1);
+
+            // Display first 10 numbers sample metrics rows index
+            for(let i = 1; i <= 10; i++) {
+                let occurrenceValue = appState.mockGlobalFrequencyMetrics[i] || 0;
+                let barWidthPercentage = (occurrenceValue / peakOccurrenceMetricVal) * 100;
+
+                builtRowsHtml += `
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="w-4 font-bold text-gray-500 text-center">${i}</span>
+                        <div class="flex-grow bg-[#1c2833] h-2 rounded overflow-hidden">
+                            <div class="bg-[#2ecc71] h-full rounded" style="width: ${barWidthPercentage}%"></div>
+                        </div>
+                        <span class="w-6 text-right font-bold text-white">${occurrenceValue}</span>
+                    </div>
+                `;
+            }
+            graphContainer.innerHTML = builtRowsHtml;
+        }
+
+        // Trigger bootstrap configuration steps execution on load runtime hook
+        initializeKenoApplicationWorkflow();
+        rebuildActiveLiveTicketsFeed();
+    </script>
 </body>
 </html>
