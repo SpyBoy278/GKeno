@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fast Keno</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Your existing styles here – same as before */
+        @keyframes slowRadarSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .animate-radar-slow { animation: slowRadarSpin 16s linear infinite; }
+        .animate-radar-slow-reverse { animation: slowRadarSpin 24s linear infinite reverse; }
+        .neon-timer-text { font-family: 'Courier New', Courier, monospace; text-shadow: 0 0 10px rgba(0, 242, 255, 0.85); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        #burger-panel {
+            transition: opacity 0.2s ease, transform 0.25s ease;
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #burger-panel.open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .backdrop-blur-sm { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .input-group-dark input {
+            background: #0f1a24;
+            border: 1px solid #2a3f54;
+            color: white;
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            width: 100%;
+            outline: none;
+        }
+        .input-group-dark input:focus { border-color: #2ecc71; }
+        .input-group-dark input::placeholder { color: #5f7a8f; }
+        .modal-close-btn {
+            position: absolute; top: 0.5rem; right: 1rem;
+            font-size: 1.5rem; cursor: pointer; color: #8aa3b9;
+        }
+        .modal-close-btn:hover { color: white; }
+    </style>
+</head>
+<body class="bg-[#090d10] text-white font-sans antialiased select-none flex justify-center min-h-screen">
+
+<div class="w-full max-w-[480px] bg-[#0e1318] flex flex-col relative border-x border-[#1c2630]/60 min-h-screen">
+
+    <!-- HEADER (unchanged) -->
+    <div class="px-4 py-2.5 flex justify-between items-center bg-[#090c0f] border-b border-[#172129] relative">
+        <div id="burger-toggle" class="flex flex-col gap-1.5 cursor-pointer p-1.5 rounded-md hover:bg-[#1c2a38] transition-colors">
+            <div class="w-6 h-0.5 bg-white/80 rounded"></div>
+            <div class="w-6 h-0.5 bg-white/80 rounded"></div>
+            <div class="w-4 h-0.5 bg-white/60 rounded"></div>
+        </div>
+        <div class="flex flex-col font-black italic tracking-tight leading-none text-xl">
+            <span>FAST</span><span class="text-[#2ecc71]">KENO</span>
+        </div>
+        <div class="flex gap-2 items-center">
+            <div class="bg-[#17222c] px-3 py-1 rounded-full border border-[#253341] font-bold text-sm text-[#f1c40f]">
+                <span id="user-balance-lbl">1000.00</span> <span class="text-[10px] text-gray-400 font-normal ml-0.5">ETB</span>
+            </div>
+            <div class="bg-[#17222c] px-3 py-1 rounded-full border border-[#253341] text-xs font-medium text-gray-200 flex items-center gap-1">
+                ID: <span id="round-id-lbl" class="font-bold">233987</span>
+                <span class="text-[#2ecc71] font-bold">✔</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- BURGER PANEL -->
+    <div id="burger-panel" class="absolute top-[62px] left-0 w-full max-w-[480px] z-50 bg-[#0d151e]/95 backdrop-blur-sm border-b border-[#2a3f54] p-5 rounded-b-2xl shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-lg font-bold text-white">👛 ቦርሳ (Wallet)</span>
+            <span id="panel-balance" class="bg-[#1c2f40] px-4 py-1.5 rounded-full text-[#2ecc71] font-bold">1000.00 ETB</span>
+        </div>
+        <div class="flex gap-3 mt-2">
+            <button id="deposit-trigger" class="flex-1 bg-[#1e8449] border border-[#27ae60] py-2.5 rounded-xl font-bold text-white hover:bg-[#27ae60] transition">💰 ገቢ (Deposit)</button>
+            <button id="withdraw-trigger" class="flex-1 bg-[#7f2d2d] border border-[#c0392b] py-2.5 rounded-xl font-bold text-white hover:bg-[#c0392b] transition">🏧 አውጣ (Withdraw)</button>
+        </div>
+        <div class="text-[11px] text-gray-400 mt-3 text-center border-t border-[#1f3346] pt-2">
+            <span>📱 አስተዳዳሪ ተልብር: <span class="text-[#00f3ff] font-mono">+25176226672</span></span>
+        </div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="text-center py-1.5 bg-[#090c0f]">
+        <div class="text-[10px] uppercase tracking-widest text-[#00f3ff] font-bold opacity-80 mb-0.5">ቀጣይ እጣ (Next Draw)</div>
+        <div id="countdown-timer-clock" class="text-3xl font-bold text-[#00f3ff] tracking-wider neon-timer-text">00:60</div>
+    </div>
+
+    <!-- STAGE AREA (simplified for brevity – include your full game stage here) -->
+    <div class="bg-[#151e26] border border-[#22303d] rounded-xl p-3.5 mx-3 my-2 min-h-[160px] flex flex-col justify-center relative overflow-hidden">
+        <div id="radar-vector-bg" class="absolute inset-0 hidden items-center justify-center opacity-15 pointer-events-none">
+            <div class="w-56 h-56 border border-[#2ecc71] rounded-full animate-radar-slow"></div>
+            <div class="absolute w-40 h-40 border border-dashed border-[#2ecc71]/70 rounded-full animate-radar-slow-reverse"></div>
+            <div class="absolute w-24 h-24 border border-[#00f3ff]/40 rounded-full"></div>
+        </div>
+        <div id="stage-context-selection" class="flex flex-col h-full justify-between w-full">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-white tracking-wide">10 ቁጥሮችን ይምረጡ</div>
+                <div class="text-[#2ecc71] font-bold text-sm mt-0.5">ከ 1 እስከ 80 (Pick 1 to 10 Numbers)</div>
+            </div>
+        </div>
+        <div id="stage-context-odds" class="hidden flex-col justify-between w-full h-full">
+            <div class="text-base font-bold text-white flex justify-between">
+                <span>ሊገኝ የሚችል ትርፍ (Possible Win):</span>
+                <span id="potential-win-amount" class="text-[#2ecc71] font-black">0.00 ETB</span>
+            </div>
+            <div class="flex flex-col gap-1 my-2 text-xs">
+                <div class="flex items-center gap-2"><span class="text-gray-400 w-12">ተዛማጅ:</span> <div id="odds-row-matches" class="flex gap-2 font-bold text-white"></div></div>
+                <div class="flex items-center gap-2"><span class="text-gray-400 w-12">ክፍያ:</span> <div id="odds-row-payouts" class="flex gap-2 font-bold text-[#2ecc71]"></div></div>
+            </div>
+            <div id="selected-mini-chips-strip" class="flex gap-1.5 overflow-x-auto pt-1 no-scrollbar"></div>
+        </div>
+        <div id="stage-context-drawing" class="hidden flex-col justify-between w-full relative z-10">
+            <div class="flex justify-between items-center text-xs text-gray-400 font-bold px-1">
+                <span>ቀጥታ እጣ ማውጣት (Live Drawing...)</span>
+                <span id="live-drawn-counter-lbl" class="font-mono text-[#00f3ff]">0 / 20</span>
+            </div>
+            <div class="my-2 flex justify-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-b from-[#2a3e54] to-[#121b26] border-2 border-[#3b5575] flex items-center justify-center shadow-xl shadow-black/80">
+                    <span id="live-ball-focus-bubble" class="text-2xl font-black font-mono text-white">-</span>
+                </div>
+            </div>
+            <div class="w-full bg-[#0e1318]/90 border border-gray-800/60 rounded-xl p-2.5 shadow-inner flex flex-col gap-1.5">
+                <div id="live-row-line-1" class="grid grid-cols-10 gap-1.5 justify-items-center"></div>
+                <div id="live-row-line-2" class="grid grid-cols-10 gap-1.5 justify-items-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="px-3 py-1 flex-grow flex items-center justify-center bg-[#0a0f15]">
+        <div id="main-keno-grid-canvas" class="grid grid-cols-10 gap-1.5 w-full max-w-sm"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="flex flex-col gap-2 px-3 pt-2 bg-[#0d141c]">
+        <div class="grid grid-cols-5 gap-2 h-11">
+            <div class="col-span-2 bg-[#1c2833] border border-[#2c3e50] rounded-lg flex items-center justify-between px-3 text-white font-bold text-sm">
+                <span id="ctrl-stake-decrement" class="cursor-pointer text-lg p-1 select-none hover:text-[#2ecc71] transition-colors">−</span>
+                <span id="ctrl-stake-display-value">10.00</span>
+                <span id="ctrl-stake-increment" class="cursor-pointer text-lg p-1 select-none hover:text-[#2ecc71] transition-colors">+</span>
+            </div>
+            <button id="ctrl-action-double" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white font-bold text-sm hover:border-[#2ecc71] transition-all">X2</button>
+            <button id="ctrl-action-quick" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white font-bold text-sm hover:border-[#2ecc71] transition-all">ማክስ</button>
+            <button id="ctrl-action-clear" class="bg-[#1c2833] border border-[#2c3e50] rounded-lg text-white text-base hover:border-[#e74c3c] transition-all">⚙</button>
+        </div>
+        <button id="ctrl-trigger-wager-submit" class="w-full bg-[#1e8449] border border-[#27ae60] text-white rounded-lg py-2.5 font-bold text-xl shadow-md tracking-wide hover:bg-[#27ae60] transition-colors cursor-pointer">
+            ይጫወቱ (PLACE BET)
+        </button>
+    </div>
+
+    <!-- TABS -->
+    <div class="grid grid-cols-4 text-center border-b border-gray-800 bg-[#0d141a] text-xs font-bold text-gray-400 mt-2">
+        <button id="tab-btn-game" class="py-3 text-[#2ecc71] border-b-2 border-[#2ecc71] bg-[#111a24]/40" onclick="switchActiveViewPanel('view-game-panel', this)">🎰 ጨዋታ</button>
+        <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-history-panel', this)">⏳ ታሪክ</button>
+        <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-results-panel', this)">✔ ውጤቶች</button>
+        <button class="py-3 hover:text-white" onclick="switchActiveViewPanel('view-stats-panel', this)">📊 ስታቲስቲክስ</button>
+    </div>
+
+    <!-- PANELS -->
+    <div class="px-3 py-2 flex-grow overflow-y-auto max-h-[175px] min-h-[140px] bg-[#0e1318] no-scrollbar">
+        <div id="view-game-panel" class="app-view-sub-pane block">
+            <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የእኔ ቲኬቶች (My Round Wagers)</div>
+            <div id="live-tickets-display-stack" class="flex flex-col gap-2"></div>
+        </div>
+        <div id="view-history-panel" class="app-view-sub-pane hidden">
+            <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የተጫወቱ ቲኬቶች ታሪክ (My Match Ledger)</div>
+            <div id="history-tickets-display-stack" class="text-center text-xs py-6 text-gray-500 font-medium">ያለፉ ቲኬቶች ታሪክ እዚህ ይዘረዘራል።</div>
+        </div>
+        <div id="view-results-panel" class="app-view-sub-pane hidden">
+            <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የመጨረሻዎቹ 100 ዙር ውጤቶች (Platform Results Archive)</div>
+            <div id="archive-results-display-stack" class="flex flex-col gap-2"></div>
+        </div>
+        <div id="view-stats-panel" class="app-view-sub-pane hidden">
+            <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">የቁጥሮች መውጣት ድግግሞሽ (100 Rounds Analytical Frequency)</div>
+            <div id="stats-frequency-graph-container" class="flex flex-col gap-1.5 py-1"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DEPOSIT MODAL ===== -->
+<div id="transaction-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-[#131f2b] w-full max-w-[380px] rounded-2xl border border-[#2c4055] p-6 relative shadow-2xl">
+        <span id="modal-close-btn" class="modal-close-btn">✕</span>
+        <h3 id="modal-title" class="text-xl font-bold text-white mb-1">💰 ገቢ (Deposit)</h3>
+        <p class="text-xs text-gray-400 mb-4">አስተዳዳሪ ተልብር: <span class="text-[#00f3ff]">+25176226672</span></p>
+        <div class="input-group-dark space-y-3">
+            <input id="tx-amount" type="number" min="50" step="1" placeholder="መጠን (ከ50 በላይ)" class="bg-[#0f1a24] border border-[#2a3f54] text-white p-3 rounded-xl w-full focus:border-[#2ecc71] outline-none">
+            <input id="tx-reference" type="text" placeholder="የግብይት ማመሳከሪያ (Transaction ID from SMS)" class="bg-[#0f1a24] border border-[#2a3f54] text-white p-3 rounded-xl w-full focus:border-[#2ecc71] outline-none">
+            <button id="tx-confirm-btn" class="w-full bg-[#1e8449] border border-[#27ae60] py-3 rounded-xl font-bold text-white hover:bg-[#27ae60] transition disabled:opacity-50">አረጋግጥ &amp; ያስገቡ</button>
+        </div>
+        <div id="tx-status-msg" class="text-center text-sm font-medium mt-3 text-yellow-400"></div>
+    </div>
+</div>
+
+<script>
+    // =====================================================================
+    // ODDS MATRIX (unchanged)
+    const ODDS_MULTIPLIER_MATRIX = { /* ... same as before ... */ };
+    // =====================================================================
+    // APP STATE
+    let appState = {
+        walletBalance: 1000.00,
+        activeWagerStake: 10.00,
+        selectedGridNumbers: [],
+        activeRoundRegisteredTickets: [],
+        archivedRoundsHistoryLog: [],
+        extractedDrawNumbersArray: [],
+        isLiveRoundDrawingActive: false,
+        countdownRemainingSeconds: 60,
+        currentSystemRoundId: 233987,
+        mockGlobalFrequencyMetrics: {}
+    };
+
+    // DOM refs (same as before)
+    const mainGridCanvasNode = document.getElementById('main-keno-grid-canvas');
+    const stageSelectionPane = document.getElementById('stage-context-selection');
+    const stageOddsPane = document.getElementById('stage-context-odds');
+    const stageDrawingPane = document.getElementById('stage-context-drawing');
+    const radarBackgroundGraphic = document.getElementById('radar-vector-bg');
+    const countdownTimerClockNode = document.getElementById('countdown-timer-clock');
+    const liveBallFocusBubbleNode = document.getElementById('live-ball-focus-bubble');
+    const liveDrawnCounterLblNode = document.getElementById('live-drawn-counter-lbl');
+    const liveRowLine1Node = document.getElementById('live-row-line-1');
+    const liveRowLine2Node = document.getElementById('live-row-line-2');
+
+    // Burger & modal
+    const burgerToggle = document.getElementById('burger-toggle');
+    const burgerPanel = document.getElementById('burger-panel');
+    const panelBalance = document.getElementById('panel-balance');
+    const modal = document.getElementById('transaction-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalClose = document.getElementById('modal-close-btn');
+    const txAmount = document.getElementById('tx-amount');
+    const txReference = document.getElementById('tx-reference');
+    const txConfirm = document.getElementById('tx-confirm-btn');
+    const txStatus = document.getElementById('tx-status-msg');
+    let currentTxMode = 'deposit';
+
+    // =====================================================================
+    // USER ID – for Telegram Web App or fallback
+    let userId = 'demo_user';
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+    } else {
+        const storedId = localStorage.getItem('keno_userId');
+        if (storedId) userId = storedId;
+        else {
+            const input = prompt('Enter your user ID (or nickname):', 'user_' + Math.floor(Math.random()*10000));
+            if (input) { userId = input; localStorage.setItem('keno_userId', userId); }
+        }
+    }
+
+    const API_BASE = 'http://localhost:3000'; // change to your backend URL
+
+    // =====================================================================
+    // BURGER TOGGLE
+    burgerToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        burgerPanel.classList.toggle('open');
+        panelBalance.innerText = appState.walletBalance.toFixed(2) + ' ETB';
+    });
+    document.addEventListener('click', (e) => {
+        if (!burgerPanel.contains(e.target) && e.target !== burgerToggle && !burgerToggle.contains(e.target)) {
+            burgerPanel.classList.remove('open');
+        }
+    });
+
+    // =====================================================================
+    // DEPOSIT / WITHDRAW TRIGGERS
+    document.getElementById('deposit-trigger').addEventListener('click', () => {
+        currentTxMode = 'deposit';
+        modalTitle.innerText = '💰 ገቢ (Deposit)';
+        txAmount.placeholder = 'መጠን (ከ50 በላይ)';
+        txReference.placeholder = 'የግብይት ማመሳከሪያ (from SMS)';
+        txStatus.innerText = '';
+        txAmount.value = '';
+        txReference.value = '';
+        modal.classList.remove('hidden');
+        burgerPanel.classList.remove('open');
+    });
+
+    document.getElementById('withdraw-trigger').addEventListener('click', () => {
+        currentTxMode = 'withdraw';
+        modalTitle.innerText = '🏧 አውጣ (Withdraw)';
+        txAmount.placeholder = 'መጠን (ከ50 በላይ)';
+        txReference.placeholder = 'የተልብር አካውንት (ለመውጫ)';
+        txStatus.innerText = '';
+        txAmount.value = '';
+        txReference.value = '';
+        modal.classList.remove('hidden');
+        burgerPanel.classList.remove('open');
+    });
+
+    modalClose.addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+    // =====================================================================
+    // CONFIRM BUTTON
+    txConfirm.addEventListener('click', async () => {
+        const amount = parseFloat(txAmount.value);
+        const ref = txReference.value.trim();
+
+        if (!amount || amount < 50) {
+            txStatus.innerText = '⚠️ Min 50 ETB';
+            txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+            return;
+        }
+
+        if (currentTxMode === 'deposit') {
+            if (ref.length < 4) {
+                txStatus.innerText = '⚠️ Enter valid transaction reference';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                return;
+            }
+            txStatus.innerText = '⏳ Submitting...';
+            txStatus.className = 'text-center text-sm font-medium mt-3 text-yellow-400';
+            txConfirm.disabled = true;
+            try {
+                const resp = await fetch(`${API_BASE}/api/deposit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, amount, transactionId: ref })
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    txStatus.innerText = '✅ Deposit submitted for approval. You will be credited once verified.';
+                    txStatus.className = 'text-center text-sm font-medium mt-3 text-yellow-400';
+                    // Do not update balance – admin will approve later.
+                } else {
+                    txStatus.innerText = '❌ ' + (data.error || 'Submission failed');
+                    txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                }
+            } catch (err) {
+                txStatus.innerText = '❌ Server error. Try again.';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+            } finally {
+                txConfirm.disabled = false;
+            }
+        } else {
+            // Withdraw
+            if (ref.length < 8) {
+                txStatus.innerText = '⚠️ Enter valid Telebirr account';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                return;
+            }
+            if (appState.walletBalance < amount) {
+                txStatus.innerText = '❌ Insufficient balance';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                return;
+            }
+            txStatus.innerText = '⏳ Processing...';
+            txStatus.className = 'text-center text-sm font-medium mt-3 text-yellow-400';
+            txConfirm.disabled = true;
+            try {
+                const resp = await fetch(`${API_BASE}/api/withdraw`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, amount, accountNumber: ref })
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    appState.walletBalance = data.newBalance;
+                    refreshGlobalDisplayIndicators();
+                    panelBalance.innerText = appState.walletBalance.toFixed(2) + ' ETB';
+                    txStatus.innerText = `✅ Withdrawal successful! -${amount.toFixed(2)} ETB`;
+                    txStatus.className = 'text-center text-sm font-medium mt-3 text-[#2ecc71]';
+                    setTimeout(() => modal.classList.add('hidden'), 1500);
+                } else {
+                    txStatus.innerText = '❌ ' + (data.error || 'Withdrawal failed');
+                    txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                }
+            } catch (err) {
+                txStatus.innerText = '❌ Server error.';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+            } finally {
+                txConfirm.disabled = false;
+            }
+        }
+    });
+
+    // =====================================================================
+    // GAME FUNCTIONS (copy your original game logic here)
+    // I'll include a minimal set, but you must paste your full game logic below.
+    // For brevity, I'll reference the functions you already have.
+    // Make sure to include: initializeKenoApplicationWorkflow, render80NumbersGridBoard, etc.
+    // =====================================================================
+
+    // Placeholder for your game functions – you must copy them from your original file.
+    function initializeKenoApplicationWorkflow() {
+        // ... your code
+    }
+    function render80NumbersGridBoard() { /* ... */ }
+    function buildTwoLineEmptyPlaceholdersGrid() { /* ... */ }
+    function refreshGlobalDisplayIndicators() { /* ... */ }
+    function rebuildPerformanceFrequencyBarsGraph() { /* ... */ }
+    function runCountdownClockTickerLoop() { /* ... */ }
+    function rebuildActiveLiveTicketsFeed() { /* ... */ }
+    function switchActiveViewPanel(target, btn) { /* ... */ }
+
+    // =====================================================================
+    // Fetch initial balance from backend
+    async function fetchBalance() {
+        try {
+            const resp = await fetch(`${API_BASE}/api/balance?userId=${userId}`);
+            const data = await resp.json();
+            if (data.balance !== undefined) {
+                appState.walletBalance = data.balance;
+                refreshGlobalDisplayIndicators();
+                panelBalance.innerText = appState.walletBalance.toFixed(2) + ' ETB';
+            }
+        } catch (e) { console.warn('Could not fetch balance'); }
+    }
+
+    // =====================================================================
+    // BOOT
+    initializeKenoApplicationWorkflow();
+    rebuildActiveLiveTicketsFeed();
+    refreshGlobalDisplayIndicators();
+    fetchBalance();
+    window.switchActiveViewPanel = switchActiveViewPanel;
+</script>
+</body>
+</html>
