@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Approve Deposits</title>
+    <style>
+        body { background: #0d141c; color: #eee; font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #2a3f54; padding: 10px; text-align: left; }
+        th { background: #1c2a38; }
+        .pending { color: #f1c40f; }
+        .approved { color: #2ecc71; }
+        .rejected { color: #e74c3c; }
+        button { background: #2ecc71; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button.reject { background: #e74c3c; }
+        #adminKey { margin-bottom: 20px; padding: 8px; background: #1c2a38; border: 1px solid #2a3f54; color: white; border-radius: 4px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .refresh-btn { background: #3498db; padding: 6px 12px; border: none; border-radius: 4px; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Pending Deposits</h1>
+    <div>
+        <input type="password" id="adminKey" placeholder="Admin Secret" value="YOUR_ADMIN_SECRET">
+        <button class="refresh-btn" onclick="fetchPending()">Refresh</button>
+    </div>
+    <div id="depositList"></div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:3000'; // change to your backend URL
+
+    async function fetchPending() {
+        const adminKey = document.getElementById('adminKey').value;
+        const res = await fetch(`${API_BASE}/api/admin/pending-deposits?adminKey=${adminKey}`);
+        const data = await res.json();
+        if (!data.deposits || data.deposits.length === 0) {
+            document.getElementById('depositList').innerHTML = '<p>No pending deposits.</p>';
+            return;
+        }
+        let html = `<table>
+            <tr><th>ID</th><th>User ID</th><th>Amount (ETB)</th><th>Transaction ID</th><th>Status</th><th>Action</th></tr>`;
+        data.deposits.forEach(d => {
+            html += `<tr>
+                <td>${d.id}</td>
+                <td>${d.user_id}</td>
+                <td>${d.amount.toFixed(2)}</td>
+                <td>${d.transaction_id}</td>
+                <td class="${d.status}">${d.status}</td>
+                <td>
+                    ${d.status === 'pending' ? `<button onclick="approve(${d.id})">Approve</button> <button class="reject" onclick="reject(${d.id})">Reject</button>` : '-'}
+                </td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('depositList').innerHTML = html;
+    }
+
+    async function approve(id) {
+        const adminKey = document.getElementById('adminKey').value;
+        const res = await fetch(`${API_BASE}/api/admin/approve-deposit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ depositId: id, adminKey })
+        });
+        const data = await res.json();
+        alert(data.success ? '✅ Approved!' : '❌ ' + data.error);
+        fetchPending();
+    }
+
+    async function reject(id) {
+        const adminKey = document.getElementById('adminKey').value;
+        const res = await fetch(`${API_BASE}/api/admin/reject-deposit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ depositId: id, adminKey })
+        });
+        const data = await res.json();
+        alert(data.success ? '✅ Rejected' : '❌ ' + data.error);
+        fetchPending();
+    }
+
+    fetchPending();
+</script>
+</body>
+</html>
