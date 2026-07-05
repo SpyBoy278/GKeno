@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fast Keno · Deposit & Withdraw</title>
+    <title>Fast Keno · Manual Deposit</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @keyframes slowRadarSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -13,7 +13,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* burger menu panel */
         #burger-panel {
             transition: opacity 0.2s ease, transform 0.25s ease;
             transform: translateX(-100%);
@@ -29,7 +28,6 @@
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
         }
-        /* deposit/withdraw input group */
         .input-group-dark input {
             background: #0f1a24;
             border: 1px solid #2a3f54;
@@ -52,15 +50,13 @@
 
 <div class="w-full max-w-[480px] bg-[#0e1318] flex flex-col relative border-x border-[#1c2630]/60 min-h-screen">
 
-    <!-- ===== HEADER with burger + balance ===== -->
+    <!-- ===== HEADER ===== -->
     <div class="px-4 py-2.5 flex justify-between items-center bg-[#090c0f] border-b border-[#172129] relative">
-        <!-- left: burger icon (double line) -->
         <div id="burger-toggle" class="flex flex-col gap-1.5 cursor-pointer p-1.5 rounded-md hover:bg-[#1c2a38] transition-colors">
             <div class="w-6 h-0.5 bg-white/80 rounded"></div>
             <div class="w-6 h-0.5 bg-white/80 rounded"></div>
             <div class="w-4 h-0.5 bg-white/60 rounded"></div>
         </div>
-
         <div class="flex flex-col font-black italic tracking-tight leading-none text-xl">
             <span>FAST</span><span class="text-[#2ecc71]">KENO</span>
         </div>
@@ -75,7 +71,7 @@
         </div>
     </div>
 
-    <!-- ===== BURGER MENU PANEL (slide-in) ===== -->
+    <!-- ===== BURGER PANEL ===== -->
     <div id="burger-panel" class="absolute top-[62px] left-0 w-full max-w-[480px] z-50 bg-[#0d151e]/95 backdrop-blur-sm border-b border-[#2a3f54] p-5 rounded-b-2xl shadow-2xl">
         <div class="flex justify-between items-center mb-4">
             <span class="text-lg font-bold text-white">👛 ቦርሳ (Wallet)</span>
@@ -188,7 +184,7 @@
     </div>
 </div>
 
-<!-- ===== DEPOSIT / WITHDRAW MODAL (overlay) ===== -->
+<!-- ===== DEPOSIT / WITHDRAW MODAL (Manual Reference method) ===== -->
 <div id="transaction-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-[#131f2b] w-full max-w-[380px] rounded-2xl border border-[#2c4055] p-6 relative shadow-2xl">
         <span id="modal-close-btn" class="modal-close-btn">✕</span>
@@ -197,8 +193,9 @@
 
         <div class="input-group-dark space-y-3">
             <input id="tx-amount" type="number" min="50" step="1" placeholder="መጠን (ከ50 በላይ)" class="bg-[#0f1a24] border border-[#2a3f54] text-white p-3 rounded-xl w-full focus:border-[#2ecc71] outline-none">
-            <input id="tx-password" type="password" placeholder="ተልብር ፒን (የሚስጥር ቁጥር)" class="bg-[#0f1a24] border border-[#2a3f54] text-white p-3 rounded-xl w-full focus:border-[#2ecc71] outline-none">
-            <button id="tx-confirm-btn" class="w-full bg-[#1e8449] border border-[#27ae60] py-3 rounded-xl font-bold text-white hover:bg-[#27ae60] transition">አረጋግጥ &amp; ያስተላልፉ</button>
+            <!-- NEW: Transaction Reference field (instead of PIN) -->
+            <input id="tx-reference" type="text" placeholder="የግብይት ማመሳከሪያ (Transaction ID from SMS)" class="bg-[#0f1a24] border border-[#2a3f54] text-white p-3 rounded-xl w-full focus:border-[#2ecc71] outline-none">
+            <button id="tx-confirm-btn" class="w-full bg-[#1e8449] border border-[#27ae60] py-3 rounded-xl font-bold text-white hover:bg-[#27ae60] transition">አረጋግጥ &amp; ያስገቡ</button>
         </div>
         <div id="tx-status-msg" class="text-center text-sm font-medium mt-3 text-yellow-400"></div>
     </div>
@@ -206,7 +203,7 @@
 
 <script>
     // =====================================================================
-    // ODDS MATRIX (same as original)
+    // ODDS MATRIX (unchanged)
     const ODDS_MULTIPLIER_MATRIX = {
         1:{1:3.5},2:{2:15},3:{2:2,3:50},4:{2:1,3:5,4:150},5:{3:3,4:15,5:500},
         6:{3:2,4:10,5:50,6:1500},7:{4:5,5:25,6:150,7:3000},
@@ -241,7 +238,7 @@
     const liveRowLine1Node = document.getElementById('live-row-line-1');
     const liveRowLine2Node = document.getElementById('live-row-line-2');
 
-    // Burger & modal elements
+    // Burger & modal
     const burgerToggle = document.getElementById('burger-toggle');
     const burgerPanel = document.getElementById('burger-panel');
     const panelBalance = document.getElementById('panel-balance');
@@ -249,10 +246,10 @@
     const modalTitle = document.getElementById('modal-title');
     const modalClose = document.getElementById('modal-close-btn');
     const txAmount = document.getElementById('tx-amount');
-    const txPassword = document.getElementById('tx-password');
+    const txReference = document.getElementById('tx-reference'); // <-- NEW
     const txConfirm = document.getElementById('tx-confirm-btn');
     const txStatus = document.getElementById('tx-status-msg');
-    let currentTxMode = 'deposit'; // 'deposit' or 'withdraw'
+    let currentTxMode = 'deposit';
 
     // =====================================================================
     // BURGER TOGGLE
@@ -273,10 +270,10 @@
         currentTxMode = 'deposit';
         modalTitle.innerText = '💰 ገቢ (Deposit)';
         txAmount.placeholder = 'መጠን (ከ50 በላይ)';
-        txAmount.min = 50;
+        txReference.placeholder = 'የግብይት ማመሳከሪያ (from SMS)';
         txStatus.innerText = '';
         txAmount.value = '';
-        txPassword.value = '';
+        txReference.value = '';
         modal.classList.remove('hidden');
         burgerPanel.classList.remove('open');
     });
@@ -285,10 +282,10 @@
         currentTxMode = 'withdraw';
         modalTitle.innerText = '🏧 አውጣ (Withdraw)';
         txAmount.placeholder = 'መጠን (ከ50 በላይ)';
-        txAmount.min = 50;
+        txReference.placeholder = 'የተልብር አካውንት (ለመውጫ)';
         txStatus.innerText = '';
         txAmount.value = '';
-        txPassword.value = '';
+        txReference.value = '';
         modal.classList.remove('hidden');
         burgerPanel.classList.remove('open');
     });
@@ -297,31 +294,36 @@
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
 
     // =====================================================================
-    // TRANSACTION CONFIRM (simulate telbirr transfer)
+    // TRANSACTION CONFIRM (Uses Reference instead of PIN)
     txConfirm.addEventListener('click', () => {
         const amount = parseFloat(txAmount.value);
-        const pin = txPassword.value.trim();
+        const ref = txReference.value.trim();
 
         if (!amount || amount < 50) {
             txStatus.innerText = '⚠️ ቢያንስ 50 ETB ያስገቡ (Min 50 ETB)';
             txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
             return;
         }
-        if (pin.length < 4) {
-            txStatus.innerText = '⚠️ ትክክለኛ ፒን ያስገቡ (4+ digits)';
-            txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
-            return;
-        }
 
-        // Simulate admin telbirr: +25176226672
-        // For deposit: add to balance, for withdraw: subtract (if enough)
         if (currentTxMode === 'deposit') {
+            // Manual deposit: user sends money to admin + provides reference
+            if (ref.length < 4) {
+                txStatus.innerText = '⚠️ እባክዎ ትክክለኛ የግብይት ማመሳከሪያ ያስገቡ (valid reference)';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                return;
+            }
             appState.walletBalance += amount;
-            txStatus.innerText = `✅ ገቢ ተፈጽሟል! +${amount.toFixed(2)} ETB (ከአስተዳዳሪ ተላልፏል)`;
+            txStatus.innerText = `✅ ገቢ ተፈጽሟል! +${amount.toFixed(2)} ETB (በአስተዳዳሪ ተረጋግጧል)`;
             txStatus.className = 'text-center text-sm font-medium mt-3 text-[#2ecc71]';
-        } else { // withdraw
+        } else {
+            // Withdraw: deduct from balance, reference is target Telebirr account
             if (appState.walletBalance < amount) {
                 txStatus.innerText = '❌ በቂ ሂሳብ የለም (Insufficient balance)';
+                txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
+                return;
+            }
+            if (ref.length < 8) {
+                txStatus.innerText = '⚠️ እባክዎ የተልብር አካውንት ያስገቡ (valid account)';
                 txStatus.className = 'text-center text-sm font-medium mt-3 text-red-400';
                 return;
             }
@@ -330,10 +332,8 @@
             txStatus.className = 'text-center text-sm font-medium mt-3 text-[#2ecc71]';
         }
 
-        // update UI
         refreshGlobalDisplayIndicators();
         panelBalance.innerText = appState.walletBalance.toFixed(2) + ' ETB';
-        // close modal after 1.5s
         setTimeout(() => {
             modal.classList.add('hidden');
             txStatus.innerText = '';
@@ -341,7 +341,7 @@
     });
 
     // =====================================================================
-    // ORIGINAL APP FUNCTIONS (preserved)
+    // GAME FUNCTIONS (unchanged from original)
     function switchActiveViewPanel(targetPanelElementId, triggerNavigationTabButton) {
         document.querySelectorAll('.app-view-sub-pane').forEach(el => el.classList.replace('block', 'hidden'));
         document.querySelectorAll('div.grid-cols-4 button').forEach(el => el.classList.remove('text-[#2ecc71]', 'border-b-2', 'border-[#2ecc71]', 'bg-[#111a24]/40'));
@@ -432,7 +432,6 @@
         panelBalance.innerText = appState.walletBalance.toFixed(2) + ' ETB';
     }
 
-    // Controls
     document.getElementById('ctrl-stake-increment').addEventListener('click', ()=>{ if(appState.isLiveRoundDrawingActive) return; appState.activeWagerStake += 5; refreshGlobalDisplayIndicators(); updateDisplayStageMessagingState(); });
     document.getElementById('ctrl-stake-decrement').addEventListener('click', ()=>{ if(appState.isLiveRoundDrawingActive||appState.activeWagerStake<=5) return; appState.activeWagerStake -= 5; refreshGlobalDisplayIndicators(); updateDisplayStageMessagingState(); });
     document.getElementById('ctrl-action-double').addEventListener('click', ()=>{ if(appState.isLiveRoundDrawingActive) return; appState.activeWagerStake *= 2; refreshGlobalDisplayIndicators(); updateDisplayStageMessagingState(); });
@@ -445,7 +444,6 @@
         updateDisplayStageMessagingState();
     }
 
-    // Submit bet
     document.getElementById('ctrl-trigger-wager-submit').addEventListener('click', ()=>{
         if(appState.isLiveRoundDrawingActive) return;
         if(appState.selectedGridNumbers.length===0) triggerRandomQuickPickGeneration();
@@ -481,7 +479,6 @@
         stack.innerHTML = html;
     }
 
-    // Countdown
     function runCountdownClockTickerLoop() {
         setInterval(()=>{
             if(!appState.isLiveRoundDrawingActive) {
@@ -494,7 +491,6 @@
         }, 1000);
     }
 
-    // Drawing
     function triggerLiveDrawingCycleSequence() {
         if(appState.activeRoundRegisteredTickets.length===0) {
             triggerRandomQuickPickGeneration();
@@ -637,8 +633,6 @@
     initializeKenoApplicationWorkflow();
     rebuildActiveLiveTicketsFeed();
     refreshGlobalDisplayIndicators();
-
-    // expose switchActiveViewPanel for onclick
     window.switchActiveViewPanel = switchActiveViewPanel;
 </script>
 </body>
